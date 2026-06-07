@@ -1,93 +1,125 @@
 # Plataforma de Gestión de Eventos "TUEVENTO"   
 
-## Integrantes
+## 👥 Integrantes
 
 - Alison Agudelo
 - Dayana Bejarano
 
-## Descripción del Proyecto
 
-La Plataforma de Gestión de Eventos es una aplicación web diseñada para facilitar la búsqueda y contratación de servicios para eventos en Colombia. La plataforma permite que las empresas registren y publiquen sus servicios, mientras que los usuarios pueden consultar diferentes opciones y seleccionar la que mejor se adapte a sus necesidades.
+## 📌 Descripción del Proyecto
 
-## Objetivo General
+TuEvento es una plataforma web diseñada para conectar clientes con empresas organizadoras de eventos en Colombia.
 
-Desarrollar una plataforma web que permita a los usuarios encontrar y contratar servicios para eventos de manera rápida y organizada, facilitando la interacción entre clientes y empresas organizadoras.
+La aplicación permitirá a los usuarios registrarse, explorar servicios ofrecidos por diferentes empresas y seleccionar la opción que mejor se adapte a sus necesidades. Por su parte, las empresas podrán registrar sus servicios y promocionarlos dentro de la plataforma.
 
-## Tecnologías Utilizadas
+
+## 🎯 Objetivo General
+
+Desarrollar una plataforma web que facilite la búsqueda, comparación y contratación de servicios para eventos, permitiendo la interacción entre clientes y empresas organizadoras.
+
+
+## 🛠️ Tecnologías Utilizadas
 
 - HTML5
 - CSS3
 - Git
 - GitHub
 
-## Funcionalidades
 
-- Registro de usuarios.
-- Inicio de sesión.
-- Consulta de empresas de eventos.
-- Visualización de servicios disponibles.
-- Gestión de información de empresas.
-- Administración de usuarios y roles.
 
-## Estructura del Proyecto
+## 📂 Estructura del Proyecto
 
-```
-Proyecto-Eventos/
+Proyecto_TUEVENTO/
 
-├── README.md
-
+│
 ├── Frontend/
 │   ├── index.html
 │   ├── login.html
-│   ├── registro.html
-
+│   ├── registro_usuario.html
+│   ├── registro_empresa.html
+│
 ├── css/
 │   └── estilos.css
-
+│
+├── img/
+│   ├── logo.png
+│   ├── fondo.jpg
+│   ├── evento1.jpg
+│   ├── evento2.jpg
+│   ├── evento3.jpg
+│   ├── evento4.jpg
+│   ├── evento5.jpg
+│   └── evento6.jpg
+│
 ├── Documentacion/
 │   ├── MER.png
 │   ├── Diagrama_Clases.png
-│   ├── Casos_de_Uso.png
-│   ├── Diagrama_Actividades.png
-│   ├── Requerimientos.pdf
-│   └── Actas.pdf
-```
+│   └── Otros_Diagramas.png
+│
+└── README.md
 
-## Diagramas Incluidos
+## 🚀 Funcionalidades Implementadas
+
+### Usuario
+
+- Registro de usuario.
+- Inicio de sesión.
+- Recuperación de contraseña.
+- Selección de rol (Cliente o Administrador).
+
+### Empresa
+
+- Registro de empresa.
+- Gestión de información empresarial.
+
+### Plataforma
+
+- Página principal con carrusel de imágenes.
+- Diseño responsive.
+- Navegación entre formularios.
+
+
+
+## 📊 Diagramas del Proyecto
+
+La carpeta **Documentacion** contiene:
 
 - Modelo Entidad Relación (MER).
 - Diagrama de Clases.
-- Diagrama de Casos de Uso.
-- Diagrama de Actividades.
-- Modelo de Base de Datos.
+- Diagramas adicionales del proyecto.
 
-## Instalación
 
-1. Clonar el repositorio.
+
+## ▶️ Cómo ejecutar el proyecto
+
+1. Clonar el repositorio:
 
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/agudeloalison74-netizen/Proyecto_TuEvento.git
 ```
 
 2. Abrir la carpeta del proyecto.
 
-3. Ejecutar el archivo `index.html` desde cualquier navegador web.
+3. Ingresar a la carpeta Frontend.
 
-## Estado del Proyecto
+4. Abrir el archivo:
 
-Actualmente el proyecto se encuentra en fase de desarrollo y validación de requisitos.
+```text
+index.html
+```
 
-## Repositorio
+en cualquier navegador web.
 
-Este repositorio contiene:
+---
 
-- Código fuente HTML.
-- Hojas de estilo CSS.
-- Documentación del proyecto.
-- Diagramas de análisis y diseño.
-- Evidencias de desarrollo.
-- Historial de cambios mediante Git y GitHub.
+## 🔗 Repositorio
 
-## Licencia
+Repositorio del proyecto:
 
-Proyecto académico desarrollado como evidencia de formación.
+https://github.com/agudeloalison74-netizen/Proyecto_TuEvento
+
+---
+
+## 📅 Estado del Proyecto
+
+Proyecto en desarrollo como parte de la formación en Técnico en Diseño y Desarrollo de Software.
