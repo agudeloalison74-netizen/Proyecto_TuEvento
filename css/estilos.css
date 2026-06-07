@@ -1,0 +1,324 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BODY */
+
+body{
+    background: linear-gradient(135deg, #f5e9ff, #e7d4ff);
+    min-height: 100vh;
+}
+
+/* HEADER */
+
+header{
+    text-align: center;
+    padding: 30px;
+}
+
+.logo-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-container img{
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+header h1{
+    color: #6d28d9;
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+header p{
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* INDEX */
+
+.contenedor{
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.principal{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+
+.carrusel{
+    width: 550px;
+    max-width: 100%;
+    height: 380px;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+}
+
+.slides{
+    display: flex;
+    width: 600%;
+    height: 100%;
+    animation: slider 24s infinite;
+}
+
+.slide{
+    width: 16.666%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes slider{
+
+    0%,15%{
+        transform: translateX(0%);
+    }
+
+    16%,31%{
+        transform: translateX(-16.666%);
+    }
+
+    32%,47%{
+        transform: translateX(-33.333%);
+    }
+
+    48%,63%{
+        transform: translateX(-50%);
+    }
+
+    64%,79%{
+        transform: translateX(-66.666%);
+    }
+
+    80%,95%{
+        transform: translateX(-83.333%);
+    }
+
+    100%{
+        transform: translateX(0%);
+    }
+}
+
+
+.botones{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.btn{
+    background: #7c3aed;
+    color: white;
+    text-decoration: none;
+    padding: 18px 30px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.btn:hover{
+    background: #5b21b6;
+    transform: translateY(-3px);
+}
+
+
+.informacion{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 20px;
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+.card{
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+}
+
+.card h3{
+    color: #6d28d9;
+    margin-bottom: 10px;
+}
+
+.card p{
+    color: #555;
+}
+
+/* LOGIN Y REGISTROS */
+
+.login-container,
+.registro-container{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url("../img/fondo.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.login-card,
+.registro-card{
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(5px);
+
+    padding: 40px;
+    border-radius: 20px;
+
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+}
+
+.login-card{
+    width: 450px;
+}
+
+.registro-card{
+    width: 600px;
+    max-width: 100%;
+}
+
+.login-card h1,
+.registro-card h1{
+    text-align: center;
+    color: #6d28d9;
+    margin-bottom: 10px;
+}
+
+.login-card h2,
+.registro-card h2{
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* FORMULARIOS */
+
+.input-group{
+    margin-bottom: 18px;
+}
+
+.input-group label{
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.input-group input,
+.input-group select{
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus{
+    border-color: #7c3aed;
+    outline: none;
+}
+
+
+.btn-login{
+    width: 100%;
+    padding: 14px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover{
+    background: #5b21b6;
+}
+
+/* LINKS */
+
+.links{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+.links a{
+    text-decoration: none;
+    color: #6d28d9;
+    font-weight: 500;
+}
+
+.links a:hover{
+    text-decoration: underline;
+}
+
+
+@media(max-width:768px){
+
+    .principal{
+        flex-direction: column;
+    }
+
+    .carrusel{
+        width: 100%;
+        height: 300px;
+    }
+
+    .botones{
+        width: 100%;
+    }
+
+    .btn{
+        width: 100%;
+    }
+
+    .login-card,
+    .registro-card{
+        width: 100%;
+    }
+
+    header h1{
+        font-size: 2.2rem;
+    }
+
+    .logo-container img{
+        width: 60px;
+        height: 60px;
+    }
+}
