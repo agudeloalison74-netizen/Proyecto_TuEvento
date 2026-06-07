@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Usuario | TuEvento</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+</head>
+<body>
+
+<div class="registro-container">
+
+    <div class="registro-card">
+
+        <h1>TUEVENTO</h1>
+        <h2>Registro de Usuario</h2>
+
+        <form>
+
+            <div class="input-group">
+                <label>Nombre Completo</label>
+                <input type="text" placeholder="Ingrese su nombre" required>
+            </div>
+
+            <div class="input-group">
+                <label>Correo Electrónico</label>
+                <input type="email" placeholder="ejemplo@gmail.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>Teléfono</label>
+                <input type="tel" placeholder="3001234567" required>
+            </div>
+
+            <div class="input-group">
+                <label>Rol</label>
+                <select required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" placeholder="********" required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                Registrarse
+            </button>
+
+        </form>
+
+        <div class="links">
+            <a href="login.html">Ya tengo una cuenta</a>
+            <a href="index.html">Volver al inicio</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
