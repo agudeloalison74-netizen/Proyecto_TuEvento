@@ -5,6 +5,7 @@
 - Alison Agudelo
 - Dayana Bejarano
 
+---
 
 ## 📌 Descripción del Proyecto
 
@@ -12,10 +13,13 @@ TuEvento es una plataforma web diseñada para conectar clientes con empresas org
 
 La aplicación permitirá a los usuarios registrarse, explorar servicios ofrecidos por diferentes empresas y seleccionar la opción que mejor se adapte a sus necesidades. Por su parte, las empresas podrán registrar sus servicios y promocionarlos dentro de la plataforma.
 
+---
 
 ## 🎯 Objetivo General
 
 Desarrollar una plataforma web que facilite la búsqueda, comparación y contratación de servicios para eventos, permitiendo la interacción entre clientes y empresas organizadoras.
+
+---
 
 
 ## 🛠️ Tecnologías Utilizadas
@@ -25,11 +29,12 @@ Desarrollar una plataforma web que facilite la búsqueda, comparación y contrat
 - Git
 - GitHub
 
-
+---
 
 ## 📂 Estructura del Proyecto
 
-Proyecto_TUEVENTO/
+```text
+Proyecto_TuEvento/
 
 │
 ├── Frontend/
@@ -37,6 +42,7 @@ Proyecto_TUEVENTO/
 │   ├── login.html
 │   ├── registro_usuario.html
 │   ├── registro_empresa.html
+│   └── recuperar_contrasena.html
 │
 ├── css/
 │   └── estilos.css
@@ -57,6 +63,9 @@ Proyecto_TUEVENTO/
 │   └── Otros_Diagramas.png
 │
 └── README.md
+```
+
+---
 
 ## 🚀 Funcionalidades Implementadas
 
@@ -78,7 +87,7 @@ Proyecto_TUEVENTO/
 - Diseño responsive.
 - Navegación entre formularios.
 
-
+---
 
 ## 📊 Diagramas del Proyecto
 
@@ -88,7 +97,7 @@ La carpeta **Documentacion** contiene:
 - Diagrama de Clases.
 - Diagramas adicionales del proyecto.
 
-
+---
 
 ## ▶️ Cómo ejecutar el proyecto
 
