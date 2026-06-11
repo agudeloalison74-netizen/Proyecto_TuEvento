@@ -34,18 +34,26 @@ Desarrollar una plataforma web que facilite la búsqueda, comparación y contrat
 ## 📂 Estructura del Proyecto
 
 ```text
-Proyecto_TuEvento/
-
+Proyecto TUEVENTO/
+│
+├── backend/
+│   ├── poo
+│     ├── abstraccion.py
+│     ├── encapsulamiento.py
+│     ├── herencia.py
+│     ├── polimorfismo.py
+│     └── main.py
+│  ├── app.js
+│  └── main.py 
+│
+├── css/
+│   └── estilos.css
 │
 ├── Frontend/
 │   ├── index.html
 │   ├── login.html
 │   ├── registro_usuario.html
 │   ├── registro_empresa.html
-│   └── recuperar_contrasena.html
-│
-├── css/
-│   └── estilos.css
 │
 ├── img/
 │   ├── logo.png
@@ -58,9 +66,14 @@ Proyecto_TuEvento/
 │   └── evento6.jpg
 │
 ├── Documentacion/
-│   ├── MER.png
+│   ├── Acta de reunión no.2.pdf
+│   ├── Casos de uso.pdf   
+│   ├── Diagrama Actividades.png 
 │   ├── Diagrama_Clases.png
-│   └── Otros_Diagramas.png
+│   ├── Lista de chequeo.pdf
+│   ├── MER.png
+│   ├── Modelo logico relacional.png
+│   └── Acta de reunión no.1.pdf
 │
 └── README.md
 ```
@@ -73,7 +86,6 @@ Proyecto_TuEvento/
 
 - Registro de usuario.
 - Inicio de sesión.
-- Recuperación de contraseña.
 - Selección de rol (Cliente o Administrador).
 
 ### Empresa
@@ -83,7 +95,7 @@ Proyecto_TuEvento/
 
 ### Plataforma
 
-- Página principal con carrusel de imágenes.
+- Página principal.
 - Diseño responsive.
 - Navegación entre formularios.
 
@@ -95,7 +107,12 @@ La carpeta **Documentacion** contiene:
 
 - Modelo Entidad Relación (MER).
 - Diagrama de Clases.
-- Diagramas adicionales del proyecto.
+- Diagrama de Actividades.
+- Modelo Logico Relacional.
+- Diagramas de casos de uso.
+- Acta de Reunion 1.
+- Acta de Reunion 2.
+- Lista de chequeo.
 
 ---
 
