@@ -397,3 +397,10 @@ footer{
     font-weight: bold;
     text-align: center;
 }
+
+.mensaje-recuperacion{
+    text-align: center;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
