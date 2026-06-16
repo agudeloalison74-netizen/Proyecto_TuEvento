@@ -45,6 +45,19 @@
             </div>
 
             <div class="input-group">
+             <label>Documento de Verificación Empresarial</label>
+
+                <div class="upload-container">
+                   <input type="file" id="documento" accept="image/*" hidden>
+
+                    <label for="documento" class="upload-box">
+                      <img id="preview" src="../img/subir.png" alt="Subir documento">
+                      <span>Haz clic para subir una imagen</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label>Contraseña</label>
                 <input type="password" placeholder="********" required>
             </div>
@@ -86,6 +99,28 @@
 
     </footer>
 
+    <script>
+      const documento = document.getElementById("documento");
+      const preview = document.getElementById("preview");
+      const texto = document.querySelector(".upload-box span");
+
+      documento.addEventListener("change", function(){
+
+        const archivo = this.files[0];
+
+        if(archivo){
+
+           const lector = new FileReader();
+
+           lector.onload = function(e){
+               preview.src = e.target.result;
+               texto.style.display = "none";
+            }
+
+            lector.readAsDataURL(archivo);
+        }
+     });
+    </script>
 
 </body>
 </html>
