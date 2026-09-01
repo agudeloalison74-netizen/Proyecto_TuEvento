@@ -1,0 +1,203 @@
+.empresa-detail-page,
+.evento-detail-page {
+    min-height: 100vh;
+
+    background-color: #F5F5F5;
+}
+
+.empresa-back {
+    color: #6C2BD9;
+
+    text-decoration: none;
+
+    font-weight: 700;
+}
+
+.empresa-detail-card {
+    background: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.empresa-detail-image {
+    width: 100%;
+
+    height: 100%;
+
+    min-height: 500px;
+
+    object-fit: cover;
+}
+
+.empresa-detail-content {
+    padding: 45px;
+}
+
+.company-category {
+    color: #6C2BD9;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+.empresa-detail-content h1 {
+    font-size: 42px;
+
+    font-weight: 800;
+
+    margin: 10px 0;
+}
+
+.company-city {
+    color: #777777;
+
+    font-size: 14px;
+}
+
+.empresa-detail-description {
+    color: #555555;
+
+    line-height: 1.7;
+
+    margin: 25px 0;
+}
+
+.services-list {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.service-item {
+    padding: 13px;
+
+    background-color: #F5F5F5;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+.service-item span {
+    color: #6C2BD9;
+
+    font-weight: 800;
+
+    margin-right: 8px;
+}
+
+
+/* =========================
+   DETALLE EVENTO
+========================= */
+
+.evento-detail-card {
+    background-color: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.evento-detail-image {
+    width: 100%;
+
+    height: 450px;
+
+    object-fit: cover;
+}
+
+.evento-detail-content {
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 45px;
+}
+
+.evento-detail-content > span {
+    color: #6C2BD9;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+.evento-detail-content h1 {
+    font-size: 42px;
+
+    font-weight: 800;
+
+    margin: 10px 0;
+}
+
+.evento-detail-content h3 {
+    color: #A970E8;
+
+    font-size: 20px;
+
+    margin-bottom: 25px;
+}
+
+.evento-detail-content p {
+    color: #555555;
+
+    line-height: 1.8;
+}
+
+.evento-detail-content h4 {
+    margin-top: 30px;
+
+    margin-bottom: 15px;
+}
+
+.evento-detail-content li {
+    margin-bottom: 8px;
+
+    color: #555555;
+}
+
+@media (max-width: 768px) {
+
+    .empresa-detail-image {
+        min-height: 300px;
+    }
+
+    .empresa-detail-content,
+    .evento-detail-content {
+        padding: 25px;
+    }
+
+    .empresa-detail-content h1,
+    .evento-detail-content h1 {
+        font-size: 32px;
+    }
+
+    .services-list {
+        grid-template-columns: 1fr;
+    }
+
+    .evento-detail-image {
+        height: 300px;
+    }
+
+}

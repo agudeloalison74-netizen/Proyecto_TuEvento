@@ -1,0 +1,295 @@
+.registro-page {
+    min-height: 100vh;
+    background-color: #F5F5F5;
+}
+
+.registro-container {
+    min-height: 100vh;
+
+    display: grid;
+
+    grid-template-columns: 0.9fr 1.1fr;
+
+    background-color: white;
+}
+
+.registro-visual {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 43, 217, 0.92),
+            rgba(169, 112, 232, 0.92)
+        ),
+        url("../assets/img/fondo.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    padding: 45px;
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.empresa-visual {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 43, 217, 0.92),
+            rgba(169, 112, 232, 0.92)
+        ),
+        url("../assets/img/fondo.jpg");
+
+    background-size: cover;
+    background-position: center;
+}
+
+.registro-logo {
+    display: inline-block;
+}
+
+.registro-logo img {
+    width: 150px;
+    max-width: 100%;
+}
+
+.registro-visual-content {
+    max-width: 480px;
+    margin-bottom: 70px;
+}
+
+.registro-icon {
+    width: 75px;
+    height: 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(255, 255, 255, 0.15);
+
+    border-radius: 20px;
+
+    font-size: 34px;
+
+    margin-bottom: 25px;
+}
+
+.registro-visual h1 {
+    font-size: 48px;
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 22px;
+}
+
+.registro-visual h1 span {
+    color: #E7D4FF;
+}
+
+.registro-visual p {
+    color: rgba(255, 255, 255, 0.88);
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+.registro-form-container {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 45px;
+}
+
+.registro-form {
+    width: 100%;
+    max-width: 550px;
+}
+
+.registro-header {
+    margin-bottom: 30px;
+}
+
+.registro-header > span {
+    color: #6C2BD9;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+.registro-header h2 {
+    color: #333333;
+
+    font-size: 37px;
+
+    font-weight: 800;
+
+    margin: 7px 0;
+}
+
+.registro-header p {
+    color: #777777;
+
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+
+    color: #333333;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+
+    border: 1px solid #DDDDDD;
+
+    border-radius: 9px;
+
+    padding: 11px 13px;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #6C2BD9;
+
+    box-shadow:
+        0 0 0 3px rgba(108, 43, 217, 0.1);
+}
+
+.registro-button {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 13px;
+
+    background-color: #6C2BD9;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+
+    transition: 0.2s ease;
+}
+
+.registro-button:hover {
+    background-color: #A970E8;
+
+    transform: translateY(-1px);
+}
+
+.registro-login {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    margin-top: 22px;
+
+    color: #777777;
+
+    font-size: 13px;
+}
+
+.registro-login a,
+.registro-empresa a {
+    color: #6C2BD9;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.registro-login a:hover,
+.registro-empresa a:hover {
+    text-decoration: underline;
+}
+
+.registro-empresa {
+    border-top: 1px solid #EEEEEE;
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    text-align: center;
+
+    color: #777777;
+
+    font-size: 13px;
+}
+
+.registro-empresa a {
+    display: block;
+
+    margin-top: 5px;
+}
+
+@media (max-width: 900px) {
+
+    .registro-container {
+        grid-template-columns: 1fr;
+    }
+
+    .registro-visual {
+        display: none;
+    }
+
+    .registro-form-container {
+        min-height: 100vh;
+
+        padding: 30px 22px;
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    .registro-form-container {
+        padding: 25px 18px;
+    }
+
+    .registro-header h2 {
+        font-size: 31px;
+    }
+
+}
