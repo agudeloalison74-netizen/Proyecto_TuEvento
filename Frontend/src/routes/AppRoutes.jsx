@@ -1,26 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import App from "../App";
 import Login from "../pages/Login";
-import Registro from "../pages/Registro";
-import Home from "../pages/Home";
-import Reserva from "../pages/Reserva";
 
 function AppRoutes() {
-  return (
-    <BrowserRouter>
-      <Routes>
+    return (
+        <BrowserRouter>
 
-        <Route path="/" element={<Home />} />
+            <Routes>
 
-        <Route path="/login" element={<Login />} />
+                {/* Página principal */}
+                <Route path="/" element={<App />} />
 
-        <Route path="/registro" element={<Registro />} />
+                {/* Login */}
+                <Route path="/login" element={<Login />} />
 
-        <Route path="/reserva" element={<Reserva />} />
+            </Routes>
 
-      </Routes>
-    </BrowserRouter>
-  );
+        </BrowserRouter>
+    );
 }
 
 export default AppRoutes;

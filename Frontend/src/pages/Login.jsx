@@ -1,149 +1,178 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import { iniciarSesion } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
+import "../styles/login.css";
 
 function Login() {
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
+    const [correo, setCorreo] = useState("");
+    const [contrasena, setContrasena] = useState("");
 
-  const { login } = useAuth();
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  const [formulario, setFormulario] = useState({
-    correo_usuario: "",
-    contrasena_usuario: "",
-  });
+        // Por ahora solamente simulamos el inicio de sesión.
+        // Después lo conectaremos con FastAPI.
 
-  const [error, setError] = useState("");
+        console.log("Correo:", correo);
+        console.log("Contraseña:", contrasena);
 
-  const handleChange = (e) => {
+        navigate("/cliente");
+    };
 
-    setFormulario({
-      ...formulario,
-      [e.target.name]: e.target.value,
-    });
+    return (
+        <div className="login-page">
 
-  };
+            <div className="login-container">
 
-  const handleSubmit = async (e) => {
+                {/* LADO VISUAL */}
+                <div className="login-visual">
 
-    e.preventDefault();
+                    <div className="login-visual-content">
 
-    setError("");
+                        <div className="login-brand">
+                            Tu<span>Evento</span>
+                        </div>
 
-    try {
+                        <div className="login-decoration">
+                            ✨
+                        </div>
 
-      const respuesta = await iniciarSesion(formulario);
+                        <h1>
+                            Tu próximo evento
+                            <span> comienza aquí.</span>
+                        </h1>
 
-      login(respuesta.access_token);
+                        <p>
+                            Encuentra empresas, servicios y todo lo que
+                            necesitas para crear momentos inolvidables.
+                        </p>
 
-      navigate("/reserva");
-
-    } catch (error) {
-
-      console.error(error);
-
-      setError(
-        "No fue posible iniciar sesión. Verifica tus datos."
-      );
-
-    }
-
-  };
-
-  return (
-
-    <div className="container py-5">
-
-      <div className="row justify-content-center">
-
-        <div className="col-md-6 col-lg-5">
-
-          <div className="card shadow">
-
-            <div className="card-body p-4">
-
-              <h2 className="text-center mb-4">
-                Iniciar sesión
-              </h2>
-
-              {error && (
-                <div className="alert alert-danger">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-
-                <div className="mb-3">
-
-                  <label className="form-label">
-                    Correo electrónico
-                  </label>
-
-                  <input
-                    type="email"
-                    name="correo_usuario"
-                    className="form-control"
-                    value={formulario.correo_usuario}
-                    onChange={handleChange}
-                    required
-                  />
+                    </div>
 
                 </div>
 
-                <div className="mb-3">
 
-                  <label className="form-label">
-                    Contraseña
-                  </label>
+                {/* FORMULARIO */}
+                <div className="login-form-container">
 
-                  <input
-                    type="password"
-                    name="contrasena_usuario"
-                    className="form-control"
-                    value={formulario.contrasena_usuario}
-                    onChange={handleChange}
-                    required
-                  />
+                    <div className="login-form">
+
+                        <div className="login-header">
+
+                            <span className="login-label">
+                                BIENVENIDO
+                            </span>
+
+                            <h2>
+                                Iniciar sesión
+                            </h2>
+
+                            <p>
+                                Ingresa a tu cuenta para continuar.
+                            </p>
+
+                        </div>
+
+
+                        <form onSubmit={handleSubmit}>
+
+                            <div className="form-group">
+
+                                <label htmlFor="correo">
+                                    Correo electrónico
+                                </label>
+
+                                <input
+                                    id="correo"
+                                    type="email"
+                                    placeholder="ejemplo@correo.com"
+                                    value={correo}
+                                    onChange={(e) =>
+                                        setCorreo(e.target.value)
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <div className="password-label">
+
+                                    <label htmlFor="contrasena">
+                                        Contraseña
+                                    </label>
+
+                                    <a href="#">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+
+                                </div>
+
+                                <input
+                                    id="contrasena"
+                                    type="password"
+                                    placeholder="Ingresa tu contraseña"
+                                    value={contrasena}
+                                    onChange={(e) =>
+                                        setContrasena(e.target.value)
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                className="login-button"
+                            >
+                                Iniciar sesión
+                            </button>
+
+                        </form>
+
+
+                        <div className="login-divider">
+                            <span>o</span>
+                        </div>
+
+
+                        <div className="register-question">
+
+                            <span>
+                                ¿Todavía no tienes una cuenta?
+                            </span>
+
+                            <Link to="/registro">
+                                Crear cuenta
+                            </Link>
+
+                        </div>
+
+
+                        <div className="company-register">
+
+                            <span>
+                                ¿Eres una empresa?
+                            </span>
+
+                            <Link to="/registro-empresa">
+                                Registra tu empresa
+                            </Link>
+
+                        </div>
+
+                    </div>
 
                 </div>
-
-                <button
-                  type="submit"
-                  className="btn w-100"
-                  style={{
-                    backgroundColor: "#6C2BD9",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  Iniciar sesión
-                </button>
-
-              </form>
-
-              <p className="text-center mt-3">
-
-                ¿No tienes una cuenta?{" "}
-
-                <Link to="/registro">
-                  Regístrate
-                </Link>
-
-              </p>
 
             </div>
 
-          </div>
-
         </div>
-
-      </div>
-
-    </div>
-
-  );
+    );
 }
 
 export default Login;
