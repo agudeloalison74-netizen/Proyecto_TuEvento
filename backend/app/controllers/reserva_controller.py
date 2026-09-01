@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.reserva import Reserva
 from app.models.usuario import Usuario
+from app.models.servicio import Servicio
 
 from app.schemas.reserva_schema import ReservaCreate
 
@@ -26,17 +27,26 @@ def crear_reserva(
     reserva: ReservaCreate
 ):
 
+    # Verificar que el usuario exista
     usuario = db.query(Usuario).filter(
         Usuario.id_usuario == reserva.id_usuario
     ).first()
 
     if not usuario:
-
         return None, "El usuario indicado no existe"
 
+    # Verificar que el servicio exista
+    servicio = db.query(Servicio).filter(
+        Servicio.id_servicio == reserva.id_servicio
+    ).first()
 
+    if not servicio:
+        return None, "El servicio indicado no existe"
+
+    # Crear la reserva
     nueva_reserva = Reserva(
         id_usuario=reserva.id_usuario,
+        id_servicio=reserva.id_servicio,
         fecha_hora=reserva.fecha_hora,
         estado=reserva.estado,
         precio_total=reserva.precio_total
@@ -48,10 +58,12 @@ def crear_reserva(
 
     return nueva_reserva, None
 
+
 def eliminar_reserva(
     db: Session,
     id_reserva: int
 ):
+
     reserva = (
         db.query(Reserva)
         .filter(
