@@ -1,21 +1,19 @@
-import API from './api';
+import api from "./api";
 
-export const loginUsuario = async (credentials) => {
-  const response = await API.post('/auth/login', credentials);
+export const registrarUsuario = async (datos) => {
+  const response = await api.post(
+    "/usuarios/auth/registro",
+    datos
+  );
+
   return response.data;
 };
 
-export const registrarCliente = async (datosCliente) => {
-  const response = await API.post('/usuarios', datosCliente);
-  return response.data;
-};
+export const iniciarSesion = async (datos) => {
+  const response = await api.post(
+    "/usuarios/auth/login",
+    datos
+  );
 
-export const registrarEmpresa = async (datosEmpresa) => {
-  const response = await API.post('/empresas', datosEmpresa);
-  return response.data;
-};
-
-export const obtenerPerfilActual = async () => {
-  const response = await API.get('/auth/me');
   return response.data;
 };

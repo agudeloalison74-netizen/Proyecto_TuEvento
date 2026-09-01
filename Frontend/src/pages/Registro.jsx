@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { iniciarSesion } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
+import { registrarUsuario } from "../services/authService";
 
-function Login() {
+function Registro() {
 
   const navigate = useNavigate();
 
-  const { login } = useAuth();
-
   const [formulario, setFormulario] = useState({
+    nombre_usuario: "",
+    apellido_usuario: "",
     correo_usuario: "",
+    telefono_usuario: "",
     contrasena_usuario: "",
+    rol: "cliente",
   });
 
+  const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -30,22 +32,27 @@ function Login() {
 
     e.preventDefault();
 
+    setMensaje("");
     setError("");
 
     try {
 
-      const respuesta = await iniciarSesion(formulario);
+      await registrarUsuario(formulario);
 
-      login(respuesta.access_token);
+      setMensaje(
+        "Usuario registrado correctamente."
+      );
 
-      navigate("/reserva");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
 
     } catch (error) {
 
       console.error(error);
 
       setError(
-        "No fue posible iniciar sesión. Verifica tus datos."
+        "No fue posible registrar el usuario."
       );
 
     }
@@ -58,15 +65,21 @@ function Login() {
 
       <div className="row justify-content-center">
 
-        <div className="col-md-6 col-lg-5">
+        <div className="col-md-7 col-lg-6">
 
           <div className="card shadow">
 
             <div className="card-body p-4">
 
               <h2 className="text-center mb-4">
-                Iniciar sesión
+                Crear cuenta
               </h2>
+
+              {mensaje && (
+                <div className="alert alert-success">
+                  {mensaje}
+                </div>
+              )}
 
               {error && (
                 <div className="alert alert-danger">
@@ -76,10 +89,48 @@ function Login() {
 
               <form onSubmit={handleSubmit}>
 
+                <div className="row">
+
+                  <div className="col-md-6 mb-3">
+
+                    <label className="form-label">
+                      Nombre
+                    </label>
+
+                    <input
+                      type="text"
+                      name="nombre_usuario"
+                      className="form-control"
+                      value={formulario.nombre_usuario}
+                      onChange={handleChange}
+                      required
+                    />
+
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+
+                    <label className="form-label">
+                      Apellido
+                    </label>
+
+                    <input
+                      type="text"
+                      name="apellido_usuario"
+                      className="form-control"
+                      value={formulario.apellido_usuario}
+                      onChange={handleChange}
+                      required
+                    />
+
+                  </div>
+
+                </div>
+
                 <div className="mb-3">
 
                   <label className="form-label">
-                    Correo electrónico
+                    Correo
                   </label>
 
                   <input
@@ -87,6 +138,23 @@ function Login() {
                     name="correo_usuario"
                     className="form-control"
                     value={formulario.correo_usuario}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </div>
+
+                <div className="mb-3">
+
+                  <label className="form-label">
+                    Teléfono
+                  </label>
+
+                  <input
+                    type="text"
+                    name="telefono_usuario"
+                    className="form-control"
+                    value={formulario.telefono_usuario}
                     onChange={handleChange}
                     required
                   />
@@ -118,17 +186,17 @@ function Login() {
                     color: "#FFFFFF",
                   }}
                 >
-                  Iniciar sesión
+                  Crear cuenta
                 </button>
 
               </form>
 
               <p className="text-center mt-3">
 
-                ¿No tienes una cuenta?{" "}
+                ¿Ya tienes una cuenta?{" "}
 
-                <Link to="/registro">
-                  Regístrate
+                <Link to="/login">
+                  Inicia sesión
                 </Link>
 
               </p>
@@ -146,4 +214,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Registro;
