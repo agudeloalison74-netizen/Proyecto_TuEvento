@@ -1,0 +1,357 @@
+.login-page {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: white;
+}
+
+
+/* =========================================
+   LADO VISUAL
+========================================= */
+
+.login-visual {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 255, 255, 0.2),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(255, 255, 255, 0.15),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #6C2BD9,
+            #A970E8
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-visual::before {
+    content: "";
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    position: absolute;
+    top: -100px;
+    right: -100px;
+}
+
+.login-visual::after {
+    content: "";
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+}
+
+.login-visual-content {
+    max-width: 500px;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.login-brand {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 80px;
+}
+
+.login-brand span {
+    color: #E7D4FF;
+}
+
+.login-decoration {
+    width: 75px;
+    height: 75px;
+
+    background-color: rgba(255, 255, 255, 0.15);
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 35px;
+
+    margin-bottom: 30px;
+}
+
+.login-visual h1 {
+    font-size: 52px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 25px;
+}
+
+.login-visual h1 span {
+    color: #E7D4FF;
+}
+
+.login-visual p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 450px;
+}
+
+
+/* =========================================
+   FORMULARIO
+========================================= */
+
+.login-form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 430px;
+}
+
+.login-header {
+    margin-bottom: 35px;
+}
+
+.login-label {
+    color: #6C2BD9;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.login-header h2 {
+    color: #333333;
+    font-size: 38px;
+    font-weight: 800;
+    margin: 8px 0;
+}
+
+.login-header p {
+    color: #777777;
+    margin: 0;
+}
+
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 13px 15px;
+
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: #6C2BD9;
+
+    box-shadow:
+        0 0 0 3px rgba(108, 43, 217, 0.1);
+}
+
+.password-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.password-label a {
+    color: #6C2BD9;
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.password-label a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   BOTÓN
+========================================= */
+
+.login-button {
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+    border-radius: 9px;
+
+    background-color: #6C2BD9;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.login-button:hover {
+    background-color: #A970E8;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   DIVISOR
+========================================= */
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    margin: 28px 0;
+
+    color: #999999;
+    font-size: 13px;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #eeeeee;
+}
+
+.login-divider span {
+    padding: 0 5px;
+}
+
+
+/* =========================================
+   REGISTRO
+========================================= */
+
+.register-question {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+
+    font-size: 13px;
+    color: #777777;
+}
+
+.register-question a,
+.company-register a {
+    color: #6C2BD9;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-question a:hover,
+.company-register a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   EMPRESA
+========================================= */
+
+.company-register {
+    margin-top: 25px;
+    padding-top: 20px;
+
+    border-top: 1px solid #eeeeee;
+
+    text-align: center;
+
+    font-size: 13px;
+    color: #777777;
+}
+
+.company-register a {
+    display: block;
+    margin-top: 5px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 850px) {
+
+    .login-container {
+        grid-template-columns: 1fr;
+    }
+
+    .login-visual {
+        display: none;
+    }
+
+    .login-form-container {
+        min-height: 100vh;
+        padding: 30px 25px;
+    }
+
+}
+
+@media (max-width: 450px) {
+
+    .login-header h2 {
+        font-size: 32px;
+    }
+
+    .login-form-container {
+        padding: 25px 20px;
+    }
+
+}
