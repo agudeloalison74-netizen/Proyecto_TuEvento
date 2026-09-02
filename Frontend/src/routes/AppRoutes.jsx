@@ -19,6 +19,8 @@ import DetalleEmpresa from "../pages/DetalleEmpresa";
 
 import DetalleEvento from "../pages/DetalleEvento";
 
+import MiEvento from "../pages/MiEvento";
+
 import SolicitudEnviada from "../pages/SolicitudEnviada";
 
 
@@ -68,11 +70,20 @@ function AppRoutes() {
 
 
 
-                {/* DETALLE DEL EVENTO */}
+                {/* DETALLE DE SERVICIOS / EVENTO */}
 
                 <Route
                     path="/evento/:id"
                     element={<DetalleEvento />}
+                />
+
+
+
+                {/* MI EVENTO */}
+
+                <Route
+                    path="/mi-evento"
+                    element={<MiEvento />}
                 />
 
 

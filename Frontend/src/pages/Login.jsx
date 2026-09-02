@@ -2,23 +2,212 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
+import { iniciarSesion } from "../services/usuarioService";
+
 function Login() {
     const navigate = useNavigate();
 
     const [correo, setCorreo] = useState("");
     const [contrasena, setContrasena] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Por ahora solamente simulamos el inicio de sesión.
-        // Después lo conectaremos con FastAPI.
+        try {
+            const datosLogin = {
+                correo_usuario: correo,
+                contrasena_usuario: contrasena
+            };
 
-        console.log("Correo:", correo);
-        console.log("Contraseña:", contrasena);
+            const respuesta = await iniciarSesion(datosLogin);
 
-        navigate("/cliente");
+            console.log("Respuesta del login:", respuesta);
+
+            // =========================
+            // GUARDAR USUARIO
+            // =========================
+
+            localStorage.setItem(
+                "usuario",
+                JSON.stringify(respuesta)
+            );
+
+            localStorage.setItem(
+                "usuarioAutenticado",
+                "true"
+            );
+
+
+            // =========================
+            // OBTENER ROL
+            // =========================
+
+            const rol =
+                respuesta?.rol ||
+                respuesta?.usuario?.rol ||
+                respuesta?.user?.rol;
+
+            if (rol) {
+                localStorage.setItem(
+                    "tipoUsuario",
+                    rol
+                );
+            }
+
+
+            // ==================================================
+            // REVISAR SI HABÍA UN SERVICIO PENDIENTE
+            // ==================================================
+
+            const servicioPendiente =
+                localStorage.getItem(
+                    "servicioPendiente"
+                );
+
+            if (servicioPendiente) {
+
+                try {
+
+                    const servicio =
+                        JSON.parse(
+                            servicioPendiente
+                        );
+
+
+                    // ==========================================
+                    // OBTENER SERVICIOS QUE YA ESTABAN AGREGADOS
+                    // ==========================================
+
+                    let serviciosSeleccionados = [];
+
+                    try {
+
+                        serviciosSeleccionados =
+                            JSON.parse(
+                                localStorage.getItem(
+                                    "serviciosSeleccionados"
+                                ) || "[]"
+                            );
+
+                    } catch (error) {
+
+                        serviciosSeleccionados = [];
+
+                    }
+
+
+                    // ==========================================
+                    // EVITAR SERVICIOS DUPLICADOS
+                    // ==========================================
+
+                    const yaExiste =
+                        serviciosSeleccionados.some(
+                            (servicioActual) =>
+                                servicioActual.id_servicio ===
+                                servicio.id_servicio
+                        );
+
+
+                    if (!yaExiste) {
+
+                        serviciosSeleccionados = [
+                            ...serviciosSeleccionados,
+                            servicio
+                        ];
+
+                    }
+
+
+                    // ==========================================
+                    // GUARDAR SERVICIOS
+                    // ==========================================
+
+                    localStorage.setItem(
+                        "serviciosSeleccionados",
+                        JSON.stringify(
+                            serviciosSeleccionados
+                        )
+                    );
+
+
+                    // ==========================================
+                    // ELIMINAR SERVICIO PENDIENTE
+                    // ==========================================
+
+                    localStorage.removeItem(
+                        "servicioPendiente"
+                    );
+
+
+                    // ==========================================
+                    // IR A MI EVENTO
+                    // ==========================================
+
+                    navigate("/mi-evento");
+
+                    return;
+
+                } catch (error) {
+
+                    console.error(
+                        "Error al procesar el servicio pendiente:",
+                        error
+                    );
+
+                    localStorage.removeItem(
+                        "servicioPendiente"
+                    );
+
+                }
+
+            }
+
+
+            // ==================================================
+            // SI NO HABÍA SERVICIO PENDIENTE
+            // REDIRIGIR SEGÚN EL ROL
+            // ==================================================
+
+            if (rol === "empresa") {
+
+                navigate("/empresa-home");
+
+            } else if (
+                rol === "admin" ||
+                rol === "administrador"
+            ) {
+
+                navigate("/admin");
+
+            } else {
+
+                navigate("/cliente");
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Error al iniciar sesión:",
+                error
+            );
+
+            if (error.response?.data?.detail) {
+
+                alert(
+                    error.response.data.detail
+                );
+
+            } else {
+
+                alert(
+                    "Correo o contraseña incorrectos."
+                );
+
+            }
+        }
     };
+
 
     return (
         <div className="login-page">
@@ -26,6 +215,7 @@ function Login() {
             <div className="login-container">
 
                 {/* LADO VISUAL */}
+
                 <div className="login-visual">
 
                     <div className="login-visual-content">
@@ -54,6 +244,7 @@ function Login() {
 
 
                 {/* FORMULARIO */}
+
                 <div className="login-form-container">
 
                     <div className="login-form">

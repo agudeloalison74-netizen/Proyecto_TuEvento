@@ -5,6 +5,8 @@ import "../styles/registro.css";
 
 import logo from "../assets/img/logo.png";
 
+import { registrarUsuario } from "../services/usuarioService";
+
 
 function RegistroUsuario() {
 
@@ -18,32 +20,39 @@ function RegistroUsuario() {
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
 
 
-    const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
+    if (contrasena !== confirmarContrasena) {
+        alert("Las contraseñas no coinciden.");
+        return;
+    }
 
+    try {
+        const datosUsuario = {
+            nombre_usuario: nombre,
+            apellido_usuario: apellido,
+            correo_usuario: correo,
+            telefono_usuario: telefono,
+            contrasena_usuario: contrasena,
+            rol: "cliente"
+        };
 
-        if (contrasena !== confirmarContrasena) {
+        await registrarUsuario(datosUsuario);
 
-            alert("Las contraseñas no coinciden.");
+        alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
+ 
+        navigate("/login");
 
-            return;
-        }
+      } catch (error) {
+            console.error("Error al registrar usuario:", error);
 
-
-        localStorage.setItem(
-            "usuarioAutenticado",
-            "true"
-        );
-
-        localStorage.setItem(
-            "tipoUsuario",
-            "cliente"
-        );
-
-
-        navigate("/cliente");
-
+            if (error.response?.data?.detail) {
+                alert(error.response.data.detail);
+            } else {
+                alert("No se pudo crear la cuenta. Verifica los datos e intenta nuevamente.");
+            }
+      }
     };
 
 

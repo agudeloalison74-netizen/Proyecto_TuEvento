@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./App.css";
@@ -11,6 +11,9 @@ import evento4 from "./assets/img/evento4.jpg";
 import evento5 from "./assets/img/evento5.jpg";
 import evento6 from "./assets/img/evento6.jpg";
 
+import { obtenerEmpresas } from "./services/empresaService";
+import api from "./services/api";
+
 
 function App() {
 
@@ -18,103 +21,292 @@ function App() {
 
     const [favoritos, setFavoritos] = useState([]);
 
+    // =========================
+    // SESIÓN
+    // =========================
+
+    const [usuarioAutenticado, setUsuarioAutenticado] = useState(
+        localStorage.getItem("usuarioAutenticado") === "true"
+    );
+
+    const [usuario, setUsuario] = useState(() => {
+
+        try {
+
+            return JSON.parse(
+                localStorage.getItem("usuario") || "null"
+            );
+
+        } catch {
+
+            return null;
+
+        }
+
+    });
+
 
     // =========================
     // EMPRESAS
     // =========================
 
-    const empresas = [
-        {
-            id: 1,
-            nombre: "Eventos Elegance",
-            categoria: "Matrimonios y celebraciones",
-            ciudad: "Bogotá",
-            imagen: evento1,
-            descripcion:
-                "Creamos celebraciones elegantes y personalizadas para convertir tus momentos especiales en recuerdos inolvidables.",
-            servicios: [
-                "Decoración",
-                "Organización de eventos",
-                "Catering",
-                "Fotografía"
-            ]
-        },
-        {
-            id: 2,
-            nombre: "Momentos Mágicos",
-            categoria: "Cumpleaños y quinceañeros",
-            ciudad: "Bogotá",
-            imagen: evento2,
-            descripcion:
-                "Nos especializamos en crear experiencias únicas para cumpleaños, quince años y celebraciones familiares.",
-            servicios: [
-                "Decoración temática",
-                "Mesa de dulces",
-                "Fotografía",
-                "Animación"
-            ]
-        },
-        {
-            id: 3,
-            nombre: "Eventos Corporativos",
-            categoria: "Eventos empresariales",
-            ciudad: "Bogotá",
-            imagen: evento3,
-            descripcion:
-                "Organizamos eventos empresariales, conferencias y reuniones profesionales con atención a cada detalle.",
-            servicios: [
-                "Conferencias",
-                "Montaje",
-                "Sonido",
-                "Catering"
-            ]
-        },
-        {
-            id: 4,
-            nombre: "Celebraciones & Co.",
-            categoria: "Fiestas y celebraciones",
-            ciudad: "Bogotá",
-            imagen: evento4,
-            descripcion:
-                "Diseñamos fiestas y celebraciones personalizadas para todo tipo de ocasiones.",
-            servicios: [
-                "Decoración",
-                "Música",
-                "Iluminación",
-                "Catering"
-            ]
-        },
-        {
-            id: 5,
-            nombre: "Dream Events",
-            categoria: "Eventos especiales",
-            ciudad: "Bogotá",
-            imagen: evento5,
-            descripcion:
-                "Transformamos tus ideas en eventos especiales llenos de creatividad, elegancia y diversión.",
-            servicios: [
-                "Planeación",
-                "Decoración",
-                "Fotografía",
-                "DJ"
-            ]
-        },
-        {
-            id: 6,
-            nombre: "Experiencias Únicas",
-            categoria: "Eventos y celebraciones",
-            ciudad: "Bogotá",
-            imagen: evento6,
-            descripcion:
-                "Una empresa dedicada a crear experiencias memorables para cada tipo de celebración.",
-            servicios: [
-                "Organización",
-                "Decoración",
-                "Catering",
-                "Entretenimiento"
-            ]
-        }
+    const [empresas, setEmpresas] = useState([]);
+
+    // Ciudades que vienen del backend
+    const [ciudades, setCiudades] = useState([]);
+
+    // Estado de carga
+    const [cargandoEmpresas, setCargandoEmpresas] = useState(true);
+
+    const [errorEmpresas, setErrorEmpresas] = useState("");
+
+
+    // =========================
+    // IMÁGENES
+    // =========================
+
+    const imagenesEmpresas = [
+        evento1,
+        evento2,
+        evento3,
+        evento4,
+        evento5,
+        evento6
     ];
+
+
+    // =========================
+    // CARGAR EMPRESAS
+    // =========================
+
+    useEffect(() => {
+
+        const cargarDatos = async () => {
+
+            try {
+
+                setCargandoEmpresas(true);
+                setErrorEmpresas("");
+
+                // Obtener empresas
+                const empresasBackend =
+                    await obtenerEmpresas();
+
+                // Obtener ciudades
+                const ciudadesResponse =
+                    await api.get("/ciudades/");
+
+                // Obtener servicios
+                const serviciosResponse =
+                    await api.get("/servicios/");
+
+                setCiudades(
+                    ciudadesResponse.data
+                );
+
+
+                // Preparar empresas para mostrarlas
+                const empresasPreparadas =
+                    empresasBackend.map(
+                        (empresa, index) => {
+
+                            const ciudadEncontrada =
+                                ciudadesResponse.data.find(
+                                    (ciudad) =>
+                                        ciudad.id_ciudad ===
+                                        empresa.id_ciudad
+                                );
+
+                            return {
+                                id: empresa.id_empresa,
+
+                                nombre:
+                                    empresa.nombre_empresa,
+
+                                categoria:
+                                    "Empresa de eventos",
+
+                                ciudad:
+                                    ciudadEncontrada
+                                        ? ciudadEncontrada.nombre_ciudad
+                                        : "Ciudad no disponible",
+
+                                imagen:
+                                    imagenesEmpresas[
+                                        index %
+                                        imagenesEmpresas.length
+                                    ],
+
+                                descripcion:
+                                    empresa.descripcion_empresa ||
+                                    "Empresa dedicada a la organización de eventos.",
+
+                                contacto:
+                                    empresa.contacto_empresa,
+
+                                direccion:
+                                    empresa.direccion_empresa,
+
+                                id_ciudad:
+                                    empresa.id_ciudad,
+
+                                id_usuario:
+                                    empresa.id_usuario,
+
+                                servicios: serviciosResponse.data.filter(
+                                    (servicio) =>
+                                        servicio.id_empresa === empresa.id_empresa
+                                )
+                            };
+                        }
+                    );
+
+
+                setEmpresas(
+                    empresasPreparadas
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error al cargar empresas:",
+                    error
+                );
+
+                if (
+                    error.response?.data?.detail
+                ) {
+
+                    setErrorEmpresas(
+                        error.response.data.detail
+                    );
+
+                } else {
+
+                    setErrorEmpresas(
+                        "No se pudieron cargar las empresas."
+                    );
+                }
+
+            } finally {
+
+                setCargandoEmpresas(false);
+
+            }
+
+        };
+
+
+        cargarDatos();
+
+    }, []);
+
+
+    // =========================
+    // ACTUALIZAR SESIÓN
+    // =========================
+
+    useEffect(() => {
+
+        const actualizarSesion = () => {
+
+            const autenticado =
+                localStorage.getItem(
+                    "usuarioAutenticado"
+                ) === "true";
+
+            setUsuarioAutenticado(
+                autenticado
+            );
+
+            try {
+
+                const usuarioGuardado =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "usuario"
+                        ) || "null"
+                    );
+
+                setUsuario(
+                    usuarioGuardado
+                );
+
+            } catch {
+
+                setUsuario(null);
+
+            }
+
+        };
+
+
+        window.addEventListener(
+            "storage",
+            actualizarSesion
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "storage",
+                actualizarSesion
+            );
+
+        };
+
+    }, []);
+
+
+    // =========================
+    // CERRAR SESIÓN
+    // =========================
+
+    const handleCerrarSesion = () => {
+
+        localStorage.removeItem(
+            "usuarioAutenticado"
+        );
+
+        localStorage.removeItem(
+            "usuario"
+        );
+
+        localStorage.removeItem(
+            "tipoUsuario"
+        );
+
+        localStorage.removeItem(
+            "reservaPendiente"
+        );
+
+        localStorage.removeItem(
+            "reservaTemporal"
+        );
+
+        setUsuarioAutenticado(
+            false
+        );
+
+        setUsuario(
+            null
+        );
+
+        navigate("/");
+
+    };
+
+
+    // =========================
+    // NOMBRE DEL USUARIO
+    // =========================
+
+    const nombreUsuario =
+        usuario?.nombre_usuario ||
+        usuario?.usuario?.nombre_usuario ||
+        usuario?.user?.nombre_usuario ||
+        "Usuario";
 
 
     // =========================
@@ -205,7 +397,9 @@ function App() {
     const handleReservar = () => {
 
         const autenticado =
-            localStorage.getItem("usuarioAutenticado") === "true";
+            localStorage.getItem(
+                "usuarioAutenticado"
+            ) === "true";
 
         if (!autenticado) {
 
@@ -316,21 +510,52 @@ function App() {
                         </ul>
 
 
-                        <div className="d-flex gap-2">
+                        {/* =========================
+                            CUENTA
+                        ========================= */}
 
-                            <Link
-                                to="/login"
-                                className="btn btn-outline-primary"
-                            >
-                                Iniciar sesión
-                            </Link>
+                        <div className="d-flex gap-2 align-items-center">
 
-                            <Link
-                                to="/registro"
-                                className="btn btn-primary"
-                            >
-                                Registrarse
-                            </Link>
+                            {usuarioAutenticado ? (
+
+                                <>
+                                    <span
+                                        className="fw-semibold"
+                                        style={{
+                                            color: "#6C2BD9"
+                                        }}
+                                    >
+                                        Hola, {nombreUsuario}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary"
+                                        onClick={handleCerrarSesion}
+                                    >
+                                        Cerrar sesión
+                                    </button>
+                                </>
+
+                            ) : (
+
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="btn btn-outline-primary"
+                                    >
+                                        Iniciar sesión
+                                    </Link>
+
+                                    <Link
+                                        to="/registro"
+                                        className="btn btn-primary"
+                                    >
+                                        Registrarse
+                                    </Link>
+                                </>
+
+                            )}
 
                         </div>
 
@@ -617,28 +842,30 @@ function App() {
 
                     <div className="row g-3 mt-4">
 
-                        {categorias.map((categoria, index) => (
+                        {categorias.map(
+                            (categoria, index) => (
 
-                            <div
-                                className="col-6 col-md-4 col-lg-3"
-                                key={index}
-                            >
+                                <div
+                                    className="col-6 col-md-4 col-lg-3"
+                                    key={index}
+                                >
 
-                                <div className="category-card">
+                                    <div className="category-card">
 
-                                    <div className="category-icon">
-                                        {categoria.icono}
+                                        <div className="category-icon">
+                                            {categoria.icono}
+                                        </div>
+
+                                        <h5>
+                                            {categoria.nombre}
+                                        </h5>
+
                                     </div>
-
-                                    <h5>
-                                        {categoria.nombre}
-                                    </h5>
 
                                 </div>
 
-                            </div>
-
-                        ))}
+                            )
+                        )}
 
                     </div>
 
@@ -677,99 +904,179 @@ function App() {
                     </div>
 
 
-                    <div className="row g-4 mt-3">
+                    {/* CARGANDO */}
 
-                        {empresas.map((empresa) => (
+                    {cargandoEmpresas && (
+
+                        <div className="text-center py-5">
 
                             <div
-                                className="col-md-6 col-lg-4"
-                                key={empresa.id}
+                                className="spinner-border"
+                                role="status"
+                            >
+                            </div>
+
+                            <p className="mt-3">
+                                Cargando empresas...
+                            </p>
+
+                        </div>
+
+                    )}
+
+
+                    {/* ERROR */}
+
+                    {!cargandoEmpresas &&
+                        errorEmpresas && (
+
+                            <div
+                                className="alert alert-danger mt-4"
+                                role="alert"
                             >
 
-                                <div className="company-card">
-
-
-                                    <div className="company-image">
-
-                                        <img
-                                            src={empresa.imagen}
-                                            alt={empresa.nombre}
-                                        />
-
-
-                                        <button
-                                            className="favorite-button"
-                                            onClick={() =>
-                                                toggleFavorito(empresa.id)
-                                            }
-                                        >
-
-                                            {favoritos.includes(empresa.id)
-                                                ? "♥"
-                                                : "♡"
-                                            }
-
-                                        </button>
-
-                                    </div>
-
-
-                                    <div className="company-content">
-
-                                        <span className="company-category">
-                                            {empresa.categoria}
-                                        </span>
-
-
-                                        <h3>
-                                            {empresa.nombre}
-                                        </h3>
-
-
-                                        <p className="company-city">
-                                            📍 {empresa.ciudad}
-                                        </p>
-
-
-                                        <p className="company-description">
-                                            {empresa.descripcion}
-                                        </p>
-
-
-                                        <div className="company-buttons">
-
-                                            <Link
-                                                to={`/empresa/${empresa.id}`}
-                                                className="btn btn-outline-primary"
-                                                state={{
-                                                    empresa: empresa
-                                                }}
-                                            >
-                                                Ver empresa
-                                            </Link>
-
-
-                                            <Link
-                                                to={`/evento/${empresa.id}`}
-                                                className="btn btn-primary"
-                                                state={{
-                                                    empresa: empresa
-                                                }}
-                                            >
-                                                Ver detalles
-                                            </Link>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
+                                {errorEmpresas}
 
                             </div>
 
-                        ))}
+                        )}
 
-                    </div>
+
+                    {/* SIN EMPRESAS */}
+
+                    {!cargandoEmpresas &&
+                        !errorEmpresas &&
+                        empresas.length === 0 && (
+
+                            <div
+                                className="alert alert-info mt-4"
+                            >
+
+                                Todavía no hay empresas
+                                registradas.
+
+                            </div>
+
+                        )}
+
+
+                    {/* EMPRESAS */}
+
+                    {!cargandoEmpresas &&
+                        !errorEmpresas &&
+                        empresas.length > 0 && (
+
+                            <div className="row g-4 mt-3">
+
+                                {empresas.map(
+                                    (empresa) => (
+
+                                        <div
+                                            className="col-md-6 col-lg-4"
+                                            key={empresa.id}
+                                        >
+
+                                            <div className="company-card">
+
+
+                                                <div className="company-image">
+
+                                                    <img
+                                                        src={empresa.imagen}
+                                                        alt={empresa.nombre}
+                                                    />
+
+
+                                                    <button
+                                                        className="favorite-button"
+                                                        onClick={() =>
+                                                            toggleFavorito(
+                                                                empresa.id
+                                                            )
+                                                        }
+                                                    >
+
+                                                        {favoritos.includes(
+                                                            empresa.id
+                                                        )
+                                                            ? "♥"
+                                                            : "♡"
+                                                        }
+
+                                                    </button>
+
+                                                </div>
+
+
+                                                <div className="company-content">
+
+                                                    <span className="company-category">
+
+                                                        {empresa.categoria}
+
+                                                    </span>
+
+
+                                                    <h3>
+                                                        {empresa.nombre}
+                                                    </h3>
+
+
+                                                    <p className="company-city">
+                                                        📍 {empresa.ciudad}
+                                                    </p>
+
+
+                                                    <p className="company-description">
+
+                                                        {empresa.descripcion}
+
+                                                    </p>
+
+
+                                                    <div className="company-buttons">
+
+                                                        <Link
+                                                            to={`/empresa/${empresa.id}`}
+                                                            className="btn btn-outline-primary"
+                                                            state={{
+                                                                empresa:
+                                                                    empresa
+                                                            }}
+                                                        >
+
+                                                            Ver empresa
+
+                                                        </Link>
+
+
+                                                        <Link
+                                                            to={`/evento/${empresa.id}`}
+                                                            className="btn btn-primary"
+                                                            state={{
+                                                                empresa:
+                                                                    empresa
+                                                            }}
+                                                        >
+
+                                                            Ver detalles
+
+                                                        </Link>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    )
+                                )}
+
+                            </div>
+
+                        )}
 
                 </div>
 
@@ -828,13 +1135,6 @@ function App() {
                                 se adapte a lo que estás buscando.
                             </p>
 
-
-                            <button
-                                className="btn btn-primary btn-lg"
-                                onClick={handleReservar}
-                            >
-                                Quiero reservar
-                            </button>
 
                         </div>
 
@@ -918,33 +1218,37 @@ function App() {
                 CTA
             ========================= */}
 
-            <section className="cta-section py-5">
+            {!usuarioAutenticado && (
 
-                <div className="container">
+                <section className="cta-section py-5">
 
-                    <div className="cta-box text-center">
+                    <div className="container">
 
-                        <h2>
-                            ¿Listo para crear tu próximo evento?
-                        </h2>
+                        <div className="cta-box text-center">
 
-                        <p>
-                            Encuentra las mejores empresas y
-                            empieza a planearlo hoy.
-                        </p>
+                            <h2>
+                                ¿Listo para crear tu próximo evento?
+                            </h2>
 
-                        <Link
-                            to="/registro"
-                            className="btn btn-light btn-lg"
-                        >
-                            Crear mi cuenta
-                        </Link>
+                            <p>
+                                Encuentra las mejores empresas y
+                                empieza a planearlo hoy.
+                            </p>
+
+                            <Link
+                                to="/registro"
+                                className="btn btn-light btn-lg"
+                            >
+                                Crear mi cuenta
+                            </Link>
+
+                        </div>
 
                     </div>
 
-                </div>
+                </section>
 
-            </section>
+            )}
 
 
 
@@ -1005,17 +1309,33 @@ function App() {
                                 Cuenta
                             </h5>
 
-                            <Link to="/login">
-                                Iniciar sesión
-                            </Link>
+                            {!usuarioAutenticado ? (
 
-                            <Link to="/registro">
-                                Registrarse
-                            </Link>
+                                <>
+                                    <Link to="/login">
+                                        Iniciar sesión
+                                    </Link>
 
-                            <Link to="/registro-empresa">
-                                Registrar empresa
-                            </Link>
+                                    <Link to="/registro">
+                                        Registrarse
+                                    </Link>
+
+                                    <Link to="/registro-empresa">
+                                        Registrar empresa
+                                    </Link>
+                                </>
+
+                            ) : (
+
+                                <button
+                                    type="button"
+                                    className="footer-logout-button"
+                                    onClick={handleCerrarSesion}
+                                >
+                                    Cerrar sesión
+                                </button>
+
+                            )}
 
                         </div>
 
@@ -1036,5 +1356,6 @@ function App() {
         </div>
     );
 }
+
 
 export default App;

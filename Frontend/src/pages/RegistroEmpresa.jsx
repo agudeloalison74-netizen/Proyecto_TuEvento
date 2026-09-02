@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "../styles/registro.css";
 
 import logo from "../assets/img/logo.png";
 
+import { registrarUsuario } from "../services/usuarioService";
+import { registrarEmpresa } from "../services/empresaService";
+import api from "../services/api";
 
 function RegistroEmpresa() {
-
     const navigate = useNavigate();
-
 
     const [nit, setNit] = useState("");
     const [nombreEmpresa, setNombreEmpresa] = useState("");
@@ -21,58 +22,139 @@ function RegistroEmpresa() {
     const [contrasena, setContrasena] = useState("");
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
 
+    const [ciudades, setCiudades] = useState([]);
 
-    const handleSubmit = (e) => {
+    // Obtener ciudades desde el backend
+    useEffect(() => {
+        const cargarCiudades = async () => {
+            try {
+                const response = await api.get("/ciudades/");
+                setCiudades(response.data);
+            } catch (error) {
+                console.error(
+                    "Error al cargar ciudades:",
+                    error
+                );
 
+                alert(
+                    "No se pudieron cargar las ciudades."
+                );
+            }
+        };
+
+        cargarCiudades();
+    }, []);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-
+        // Verificar contraseñas
         if (contrasena !== confirmarContrasena) {
-
             alert("Las contraseñas no coinciden.");
-
             return;
         }
 
-
-        localStorage.setItem(
-            "usuarioAutenticado",
-            "true"
+        // Verificar ciudad
+        const ciudadSeleccionada = ciudades.find(
+            (ciudadItem) =>
+                ciudadItem.id_ciudad === Number(ciudad)
         );
 
-        localStorage.setItem(
-            "tipoUsuario",
-            "empresa"
-        );
+        if (!ciudadSeleccionada) {
+            alert("Selecciona una ciudad válida.");
+            return;
+        }
 
+        try {
+            // 1. Crear usuario de la empresa
+            const datosUsuario = {
+                nombre_usuario: nombreEmpresa,
+                apellido_usuario: "Empresa",
+                correo_usuario: correo,
+                telefono_usuario: contacto,
+                contrasena_usuario: contrasena,
+                rol: "empresa"
+            };
 
-        navigate("/empresa-home");
+            const usuarioCreado =
+                await registrarUsuario(datosUsuario);
 
+            console.log(
+                "Usuario de empresa creado:",
+                usuarioCreado
+            );
+
+            // 2. Obtener el ID del usuario creado
+            const idUsuario =
+                usuarioCreado?.id_usuario ||
+                usuarioCreado?.usuario?.id_usuario ||
+                usuarioCreado?.user?.id_usuario;
+
+            if (!idUsuario) {
+                throw new Error(
+                    "No se recibió el id_usuario del backend."
+                );
+            }
+
+            // 3. Crear la empresa
+            const datosEmpresa = {
+                id_empresa: nit,
+                nombre_empresa: nombreEmpresa,
+                descripcion_empresa: descripcion,
+                contacto_empresa: contacto,
+                direccion_empresa: direccion,
+                id_ciudad: ciudadSeleccionada.id_ciudad,
+                id_usuario: idUsuario
+            };
+
+            const empresaCreada =
+                await registrarEmpresa(datosEmpresa);
+
+            console.log(
+                "Empresa creada:",
+                empresaCreada
+            );
+
+            alert(
+                "¡Empresa registrada correctamente! Ahora puedes iniciar sesión."
+            );
+
+            // 4. Ir al login
+            navigate("/login");
+
+        } catch (error) {
+            console.error(
+                "Error al registrar empresa:",
+                error
+            );
+
+            if (error.response?.data?.detail) {
+                alert(
+                    error.response.data.detail
+                );
+            } else {
+                alert(
+                    "No se pudo registrar la empresa. Verifica los datos e intenta nuevamente."
+                );
+            }
+        }
     };
 
-
     return (
-
         <div className="registro-page">
-
             <div className="registro-container">
 
-
                 <div className="registro-visual empresa-visual">
-
 
                     <Link
                         to="/"
                         className="registro-logo"
                     >
-
                         <img
                             src={logo}
                             alt="TuEvento"
                         />
-
                     </Link>
-
 
                     <div className="registro-visual-content">
 
@@ -80,12 +162,10 @@ function RegistroEmpresa() {
                             🏢
                         </div>
 
-
                         <h1>
                             Haz crecer tu
                             <span> empresa.</span>
                         </h1>
-
 
                         <p>
                             Registra tu empresa en TuEvento
@@ -98,13 +178,9 @@ function RegistroEmpresa() {
 
                 </div>
 
-
-
                 <div className="registro-form-container">
 
-
                     <div className="registro-form">
-
 
                         <div className="registro-header">
 
@@ -122,10 +198,7 @@ function RegistroEmpresa() {
 
                         </div>
 
-
-
                         <form onSubmit={handleSubmit}>
-
 
                             <div className="form-group">
 
@@ -145,8 +218,6 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <div className="form-group">
 
                                 <label>
@@ -165,8 +236,6 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <div className="form-group">
 
                                 <label>
@@ -184,10 +253,7 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <div className="row">
-
 
                                 <div className="col-md-6">
 
@@ -211,8 +277,6 @@ function RegistroEmpresa() {
 
                                 </div>
 
-
-
                                 <div className="col-md-6">
 
                                     <div className="form-group">
@@ -221,23 +285,42 @@ function RegistroEmpresa() {
                                             Ciudad
                                         </label>
 
-                                        <input
-                                            type="text"
-                                            placeholder="Bogotá"
+                                        <select
                                             value={ciudad}
                                             onChange={(e) =>
                                                 setCiudad(e.target.value)
                                             }
                                             required
-                                        />
+                                        >
+
+                                            <option value="">
+                                                Selecciona una ciudad
+                                            </option>
+
+                                            {ciudades.map(
+                                                (ciudadItem) => (
+                                                    <option
+                                                        key={
+                                                            ciudadItem.id_ciudad
+                                                        }
+                                                        value={
+                                                            ciudadItem.id_ciudad
+                                                        }
+                                                    >
+                                                        {
+                                                            ciudadItem.nombre_ciudad
+                                                        }
+                                                    </option>
+                                                )
+                                            )}
+
+                                        </select>
 
                                     </div>
 
                                 </div>
 
                             </div>
-
-
 
                             <div className="form-group">
 
@@ -257,8 +340,6 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <div className="form-group">
 
                                 <label>
@@ -276,8 +357,6 @@ function RegistroEmpresa() {
                                 />
 
                             </div>
-
-
 
                             <div className="form-group">
 
@@ -297,8 +376,6 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <div className="form-group">
 
                                 <label>
@@ -317,8 +394,6 @@ function RegistroEmpresa() {
 
                             </div>
 
-
-
                             <button
                                 type="submit"
                                 className="registro-button"
@@ -326,10 +401,7 @@ function RegistroEmpresa() {
                                 Registrar empresa
                             </button>
 
-
                         </form>
-
-
 
                         <div className="registro-login">
 
@@ -343,18 +415,13 @@ function RegistroEmpresa() {
 
                         </div>
 
-
                     </div>
 
                 </div>
 
             </div>
-
         </div>
-
     );
-
 }
-
 
 export default RegistroEmpresa;
