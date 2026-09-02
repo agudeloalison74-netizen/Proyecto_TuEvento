@@ -22,7 +22,7 @@ CREATE TABLE usuario (
     apellido_usuario VARCHAR(50) NOT NULL,
     correo_usuario VARCHAR(50) UNIQUE NOT NULL,
     telefono_usuario VARCHAR(10),
-    contrasena_usuario VARCHAR(50) NOT NULL,
+    contrasena_usuario VARCHAR(100) NOT NULL,
     rol VARCHAR(50) NOT NULL
 );
 
@@ -98,7 +98,8 @@ CREATE TABLE reserva (
     fecha_hora TIMESTAMP NOT NULL,
     estado VARCHAR(30) NOT NULL DEFAULT 'PENDIENTE',
     precio_total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-    id_usuario INT NOT NULL REFERENCES usuario(id_usuario) ON DELETE RESTRICT ON UPDATE CASCADE
+    id_usuario INT NOT NULL REFERENCES usuario(id_usuario) ON DELETE RESTRICT ON UPDATE CASCADE,
+    id_servicio INT NOT NULL REFERENCES servicio(id_servicio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- 12. Resena
