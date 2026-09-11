@@ -1,19 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
-from passlib.context import CryptContext
 from jose import jwt
 
 from app.config.settings import SECRET_KEY
-
-
-# =========================================================
-# CONFIGURACIÓN DE CONTRASEÑAS
-# =========================================================
-
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
 
 
 # =========================================================
@@ -26,12 +15,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 # =========================================================
-# ENCRIPTAR CONTRASEÑA
+# MANEJO DE CONTRASEÑA (TEXTO PLANO)
 # =========================================================
 
 def hash_password(password: str) -> str:
-
-    return pwd_context.hash(password)
+    # Devuelve la contraseña tal cual, sin aplicar hash
+    return password
 
 
 # =========================================================
@@ -42,11 +31,8 @@ def verify_password(
     plain_password: str,
     hashed_password: str
 ) -> bool:
-
-    return pwd_context.verify(
-        plain_password,
-        hashed_password
-    )
+    # Compara directamente los strings
+    return plain_password == hashed_password
 
 
 # =========================================================

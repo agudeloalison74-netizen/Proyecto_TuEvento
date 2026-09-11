@@ -327,13 +327,19 @@ function MiEvento() {
 
                                 </div>
 
-                                <span
+                                <button
+                                    type="button"
+                                    className="btn-carrito"
+                                    title="Volver a empresas para agregar más servicios"
+                                    onClick={() =>
+                                        navigate("/")
+                                    }
                                     style={{
                                         fontSize: "32px"
                                     }}
                                 >
                                     🛒
-                                </span>
+                                </button>
 
                             </div>
 
@@ -737,6 +743,10 @@ function MiEvento() {
                                     className="btn-reserva-submit"
                                     disabled={
                                         serviciosSeleccionados.length === 0 ||
+                                        !fecha ||
+                                        !hora ||
+                                        !tipoEvento ||
+                                        !cantidadPersonas ||
                                         enviando
                                     }
                                 >

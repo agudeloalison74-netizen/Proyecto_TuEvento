@@ -161,6 +161,44 @@
     transform: translateY(-1px);
 }
 
+.btn-reserva-submit:disabled {
+    background-color: #E7D4FF;
+
+    color: #B497D6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+.btn-reserva-submit:disabled:hover {
+    background-color: #E7D4FF;
+
+    transform: none;
+}
+
+.btn-carrito {
+    background: none;
+
+    border: none;
+
+    padding: 4px;
+
+    cursor: pointer;
+
+    line-height: 1;
+
+    border-radius: 8px;
+
+    transition: 0.2s;
+}
+
+.btn-carrito:hover {
+    background-color: #F1E6FF;
+
+    transform: translateY(-1px);
+}
+
 @media (max-width: 600px) {
 
     .reserva-card {
