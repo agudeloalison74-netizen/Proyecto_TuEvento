@@ -23,13 +23,66 @@ function Login() {
 
             console.log("Respuesta del login:", respuesta);
 
+            // ==================================================
+            // DECODIFICAR EL TOKEN JWT
+            // El backend solo devuelve access_token y token_type,
+            // así que extraemos id_usuario, rol y correo del propio
+            // token (payload "sub", "rol", "correo").
+            // ==================================================
+
+            const token = respuesta.access_token;
+
+            let datosUsuario = {};
+
+            try {
+
+                const payloadBase64 =
+                    token.split(".")[1];
+
+                const payloadJson =
+                    decodeURIComponent(
+                        atob(payloadBase64)
+                            .split("")
+                            .map((c) =>
+                                "%" +
+                                c
+                                    .charCodeAt(0)
+                                    .toString(16)
+                                    .padStart(2, "0")
+                            )
+                            .join("")
+                    );
+
+                const payload = JSON.parse(payloadJson);
+
+                datosUsuario = {
+                    id_usuario: Number(payload.sub),
+                    rol: payload.rol,
+                    correo_usuario: payload.correo
+                };
+
+            } catch (error) {
+
+                console.error(
+                    "No se pudo decodificar el token:",
+                    error
+                );
+
+            }
+
+
             // =========================
-            // GUARDAR USUARIO
+            // GUARDAR USUARIO Y TOKEN
             // =========================
 
             localStorage.setItem(
                 "usuario",
-                JSON.stringify(respuesta)
+                JSON.stringify(datosUsuario)
+            );
+
+            localStorage.setItem(
+                "token",
+                token
             );
 
             localStorage.setItem(
@@ -42,10 +95,7 @@ function Login() {
             // OBTENER ROL
             // =========================
 
-            const rol =
-                respuesta?.rol ||
-                respuesta?.usuario?.rol ||
-                respuesta?.user?.rol;
+            const rol = datosUsuario.rol;
 
             if (rol) {
                 localStorage.setItem(

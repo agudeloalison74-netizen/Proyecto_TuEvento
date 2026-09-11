@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "../styles/reserva.css";
 
+import { crearReservasDeEvento } from "../services/reservaService";
+
 function MiEvento() {
 
     const navigate = useNavigate();
@@ -15,6 +17,9 @@ function MiEvento() {
     const [tipoEvento, setTipoEvento] = useState("");
     const [cantidadPersonas, setCantidadPersonas] = useState("");
     const [mensaje, setMensaje] = useState("");
+
+    const [enviando, setEnviando] = useState(false);
+    const [errorEnvio, setErrorEnvio] = useState("");
 
 
     // =========================
@@ -93,9 +98,11 @@ function MiEvento() {
     // ENVIAR EVENTO
     // =========================
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
+
+        setErrorEnvio("");
 
 
         const autenticado =
@@ -126,44 +133,130 @@ function MiEvento() {
         }
 
 
-        const evento = {
+        // ==================================================
+        // OBTENER EL USUARIO AUTENTICADO
+        // ==================================================
 
-            servicios:
-                serviciosSeleccionados,
+        let usuario = null;
 
-            fecha:
-                fecha,
+        try {
 
-            hora:
-                hora,
+            usuario = JSON.parse(
+                localStorage.getItem("usuario") || "null"
+            );
 
-            tipoEvento:
-                tipoEvento,
+        } catch (error) {
 
-            cantidadPersonas:
-                cantidadPersonas,
+            usuario = null;
 
-            mensaje:
-                mensaje,
+        }
 
-            total:
-                total,
+        if (!usuario || !usuario.id_usuario) {
 
-            estado:
-                "PENDIENTE"
+            setErrorEnvio(
+                "No pudimos identificar tu usuario. Por favor inicia sesión de nuevo."
+            );
 
-        };
+            navigate("/login");
 
+            return;
 
-        localStorage.setItem(
-            "eventoTemporal",
-            JSON.stringify(evento)
-        );
+        }
 
 
-        navigate(
-            "/solicitud-enviada"
-        );
+        // ==================================================
+        // CONSTRUIR LA FECHA Y HORA PARA LA RESERVA
+        // ==================================================
+
+        const fechaHoraISO =
+            fecha && hora
+                ? `${fecha}T${hora}:00`
+                : new Date().toISOString();
+
+
+        setEnviando(true);
+
+        try {
+
+            // ==================================================
+            // GUARDAR CADA SERVICIO COMO UNA RESERVA EN LA BD
+            // ==================================================
+
+            const reservasCreadas =
+                await crearReservasDeEvento(
+                    serviciosSeleccionados,
+                    {
+                        id_usuario: usuario.id_usuario,
+                        fecha_hora: fechaHoraISO,
+                        estado: "PENDIENTE"
+                    }
+                );
+
+
+            const evento = {
+
+                servicios:
+                    reservasCreadas,
+
+                fecha:
+                    fecha,
+
+                hora:
+                    hora,
+
+                tipoEvento:
+                    tipoEvento,
+
+                cantidadPersonas:
+                    cantidadPersonas,
+
+                mensaje:
+                    mensaje,
+
+                total:
+                    total,
+
+                estado:
+                    "PENDIENTE"
+
+            };
+
+
+            localStorage.setItem(
+                "eventoTemporal",
+                JSON.stringify(evento)
+            );
+
+            // Limpiamos el carrito porque ya quedó guardado en la BD
+            localStorage.removeItem(
+                "serviciosSeleccionados"
+            );
+
+
+            navigate(
+                "/solicitud-enviada"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error al guardar el evento en la base de datos:",
+                error
+            );
+
+            const detalle =
+                error.response?.data?.detail;
+
+            setErrorEnvio(
+                detalle ||
+                "Ocurrió un error al guardar tu evento. Intenta nuevamente."
+            );
+
+        } finally {
+
+            setEnviando(false);
+
+        }
 
     };
 
@@ -625,14 +718,31 @@ function MiEvento() {
                                 </div>
 
 
+                                {errorEnvio && (
+
+                                    <div
+                                        className="p-3 rounded-4 mb-3"
+                                        style={{
+                                            backgroundColor: "#FDE2E2",
+                                            color: "#B42318"
+                                        }}
+                                    >
+                                        <small>{errorEnvio}</small>
+                                    </div>
+
+                                )}
+
                                 <button
                                     type="submit"
                                     className="btn-reserva-submit"
                                     disabled={
-                                        serviciosSeleccionados.length === 0
+                                        serviciosSeleccionados.length === 0 ||
+                                        enviando
                                     }
                                 >
-                                    Crear mi evento
+                                    {enviando
+                                        ? "Guardando tu evento..."
+                                        : "Crear mi evento"}
                                 </button>
 
                             </form>
