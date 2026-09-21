@@ -23,6 +23,12 @@ import MiEvento from "../pages/MiEvento";
 
 import SolicitudEnviada from "../pages/SolicitudEnviada";
 
+import CategoriasPage from "../pages/CategoriasPage";
+
+import DepartamentosPage from "../pages/DepartamentosPage";
+
+import ResenasPage from "../pages/ResenasPage";
+
 
 function AppRoutes() {
 
@@ -144,6 +150,31 @@ function AppRoutes() {
 
                         </div>
                     }
+                />
+
+                {/* EVIDENCIA: CATEGORÍAS */}
+
+                <Route
+                    path="/categorias"
+                    element={<CategoriasPage />}
+                />
+
+
+
+                {/* EVIDENCIA: DEPARTAMENTOS */}
+
+                <Route
+                    path="/departamentos"
+                    element={<DepartamentosPage />}
+                />
+
+
+
+                {/* EVIDENCIA: RESEÑAS */}
+
+                <Route
+                    path="/resenas"
+                    element={<ResenasPage />}
                 />
 
             </Routes>

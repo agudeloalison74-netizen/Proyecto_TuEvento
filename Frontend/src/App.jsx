@@ -519,6 +519,38 @@ function App() {
                             {usuarioAutenticado ? (
 
                                 <>
+                                    <div className="dropdown">
+                                        <button
+                                            className="btn btn-outline-primary dropdown-toggle"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i className="bi bi-grid-fill me-1"></i>
+                                            Gestión
+                                        </button>
+
+                                        <ul className="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <Link className="dropdown-item" to="/categorias">
+                                                    <i className="bi bi-tags-fill me-2"></i>
+                                                    Categorías
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link className="dropdown-item" to="/departamentos">
+                                                    <i className="bi bi-map-fill me-2"></i>
+                                                    Departamentos
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link className="dropdown-item" to="/resenas">
+                                                    <i className="bi bi-star-fill me-2"></i>
+                                                    Reseñas
+                                                </Link>
+                                            </li>
+                                        </ul>
+                                    </div>
+
                                     <span
                                         className="fw-semibold"
                                         style={{
