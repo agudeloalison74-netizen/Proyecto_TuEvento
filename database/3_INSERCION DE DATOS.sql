@@ -1,3 +1,12 @@
+select * from usuario;
+select * from reserva;
+select * from evento;
+select * from servicio;
+
+DELETE FROM reserva WHERE id_servicio IS NULL
+
+ALTER TABLE reserva ALTER COLUMN id_servicio SET NOT NULL
+
 -- =========================================================
 -- DML: INSERCIÓN DE USUARIOS Y ROLES
 -- =========================================================
@@ -34,8 +43,8 @@ UPDATE disponibilidad SET id_servicio = 2 WHERE id_disponibilidad = 2;
 -- DML: CREAR SOLICITUD DE RESERVA Y VINCULAR SERVICIOS
 -- =========================================================
 -- 1. Crear cabecera de la reserva
-INSERT INTO reserva (fecha_hora, estado, id_usuario) VALUES 
-('2026-10-15 14:00:00', 'PENDIENTE', 1);
+INSERT INTO reserva (fecha_hora, estado, id_usuario, id_servicio) VALUES 
+('2026-10-15 14:00:00', 'PENDIENTE', 1, 1);
 
 -- 2. Crear evento asociado
 INSERT INTO evento (nombre_evento, descripcion_evento, id_empresa, id_categoria) VALUES 
@@ -43,14 +52,13 @@ INSERT INTO evento (nombre_evento, descripcion_evento, id_empresa, id_categoria)
 
 -- 3. Detalle de la reserva (dispara actualización de precio_total mediante Trigger)
 INSERT INTO servicio_reserva (id_reserva, id_evento, id_servicio) VALUES 
-(1, 1, 1),
-(1, 1, 2);
+(7, 1, 2)
 
 -- =========================================================
 -- DML: RESEÑAS / FEEDBACK DE RESERVAS COMPLETADAS
 -- =========================================================
 INSERT INTO resena (fecha_resena, descripcion_resena, id_reserva) VALUES 
-('2026-10-16', 'Excelente atención, la comida y el sonido superaron las expectativas.', 1);
+('2026-10-16', 'Excelente atención, la comida y el sonido superaron las expectativas.', 7);
 
 -- =========================================================
 -- DATOS ADICIONALES SIN DEPENDENCIAS DE ID FIJOS
@@ -133,10 +141,10 @@ INSERT INTO servicio_evento (id_servicio, id_evento) VALUES
 ((SELECT id_servicio FROM servicio WHERE nombre_servicio = 'Buffet Internacional'), (SELECT id_evento FROM evento WHERE nombre_evento = 'Boda Campestre Cali'));
 
 -- 9. Reservas
-INSERT INTO reserva (fecha_hora, estado, id_usuario) VALUES 
-('2026-09-05 18:00:00', 'ACEPTADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'david.sanchez@email.com')),
-('2026-09-10 10:00:00', 'CONFIRMADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'sofia.castro@email.com')),
-('2026-11-01 20:00:00', 'CONFIRMADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'david.sanchez@email.com'));
+INSERT INTO reserva (fecha_hora, estado, id_usuario, id_servicio) VALUES 
+('2026-09-05 18:00:00', 'ACEPTADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'david.sanchez@email.com'), 1),
+('2026-09-10 10:00:00', 'CONFIRMADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'sofia.castro@email.com'),2),
+('2026-11-01 20:00:00', 'CONFIRMADA', (SELECT id_usuario FROM usuario WHERE correo_usuario = 'david.sanchez@email.com'),3);
 
 -- 10. Detalle de Servicios en Reservas
 INSERT INTO servicio_reserva (id_reserva, id_evento, id_servicio) VALUES 
