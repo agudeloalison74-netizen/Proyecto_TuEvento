@@ -4,14 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/gestion.css";
 
-// =============================================================
-// PÁGINA EVIDENCIA: CATEGORÍAS
-// - Componente principal que usa useEffect() para conectarse
-//   a la API REST del proyecto (GET /categorias/).
-// - Tiene los componentes necesarios para REGISTRAR y LISTAR
-//   la entidad Categoría.
-// - Solo accesible si hay un usuario o empresa autenticado.
-// =============================================================
 
 function CategoriasPage() {
 

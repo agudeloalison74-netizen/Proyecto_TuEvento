@@ -29,6 +29,8 @@ import DepartamentosPage from "../pages/DepartamentosPage";
 
 import ResenasPage from "../pages/ResenasPage";
 
+import EmpresasPage from "../pages/EmpresasPage";
+
 
 function AppRoutes() {
 
@@ -175,6 +177,15 @@ function AppRoutes() {
                 <Route
                     path="/resenas"
                     element={<ResenasPage />}
+                />
+
+
+
+                {/* EVIDENCIA: EMPRESAS */}
+
+                <Route
+                    path="/empresas"
+                    element={<EmpresasPage />}
                 />
 
             </Routes>

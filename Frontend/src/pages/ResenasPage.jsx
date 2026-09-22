@@ -3,14 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 
-// =============================================================
-// PÁGINA EVIDENCIA: RESEÑAS
-// - Componente principal que usa useEffect() para conectarse
-//   a la API REST del proyecto (GET /resenas/).
-// - Tiene los componentes necesarios para REGISTRAR y LISTAR
-//   la entidad Reseña.
-// - Solo accesible si hay un usuario o empresa autenticado.
-// =============================================================
 
 function ResenasPage() {
 

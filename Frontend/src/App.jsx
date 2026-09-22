@@ -531,6 +531,12 @@ function App() {
 
                                         <ul className="dropdown-menu dropdown-menu-end">
                                             <li>
+                                                <Link className="dropdown-item" to="/empresas">
+                                                    <i className="bi bi-building-fill me-2"></i>
+                                                    Empresas
+                                                </Link>
+                                            </li>
+                                            <li>
                                                 <Link className="dropdown-item" to="/categorias">
                                                     <i className="bi bi-tags-fill me-2"></i>
                                                     Categorías
