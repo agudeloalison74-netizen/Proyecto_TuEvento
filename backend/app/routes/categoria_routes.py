@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
@@ -39,11 +39,18 @@ def buscar_categoria(
     id_categoria: int,
     db: Session = Depends(get_db)
 ):
-
-    return obtener_categoria(
+    categoria = obtener_categoria(
         db,
         id_categoria
     )
+
+    if not categoria:
+        raise HTTPException(
+            status_code=404,
+            detail="Categoría no encontrada"
+        )
+
+    return categoria
 
 
 @router.post(
