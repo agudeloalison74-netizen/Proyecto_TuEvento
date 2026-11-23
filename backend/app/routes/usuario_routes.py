@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
@@ -9,18 +9,26 @@ from app.controllers.usuario_controller import (
     crear_usuario,
     registrar_usuario as registrar_usuario_controller,
     autenticar_usuario,
-    eliminar_usuario
+    eliminar_usuario,
+    solicitar_recuperacion_contrasena,
+    verificar_codigo_recuperacion,
+    cambiar_contrasena,
+    actualizar_perfil_usuario
 )
 
 from app.schemas.usuario_schema import (
     UsuarioCreate,
-    UsuarioResponse
+    UsuarioResponse,
+    UsuarioPerfilUpdate
 )
 
 from app.schemas.auth_schema import (
     RegistroRequest,
     LoginRequest,
-    TokenResponse
+    TokenResponse,
+    RecuperarContrasenaRequest,
+    VerificarCodigoRequest,
+    CambioContrasenaRequest
 )
 
 from app.utils.security import get_current_user
@@ -55,6 +63,52 @@ def listar_usuarios(
 # =========================================================
 # BUSCAR USUARIO
 # =========================================================
+
+@router.get(
+    "/me",
+    response_model=UsuarioResponse
+)
+def obtener_mi_perfil(
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_current_user)
+):
+    try:
+        id_usuario = int(usuario_actual["sub"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="La sesión no identifica una cuenta válida."
+        ) from error
+
+    usuario = obtener_usuario(db, id_usuario)
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+
+    return usuario
+
+
+@router.put(
+    "/me",
+    response_model=UsuarioResponse
+)
+def actualizar_mi_perfil(
+    datos: UsuarioPerfilUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_current_user)
+):
+    try:
+        id_usuario = int(usuario_actual["sub"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="La sesión no identifica una cuenta válida."
+        ) from error
+
+    return actualizar_perfil_usuario(db, id_usuario, datos)
+
 
 @router.get(
     "/{id_usuario}",
@@ -152,6 +206,40 @@ def login(
         db,
         datos
     )
+
+
+@router.post("/auth/recuperar-contrasena")
+def recuperar_contrasena(
+    datos: RecuperarContrasenaRequest,
+    db: Session = Depends(get_db)
+):
+    return solicitar_recuperacion_contrasena(db, datos)
+
+
+@router.post("/auth/verificar-codigo")
+def verificar_codigo(
+    datos: VerificarCodigoRequest,
+    db: Session = Depends(get_db)
+):
+    return verificar_codigo_recuperacion(db, datos)
+
+
+@router.put("/me/contrasena")
+def actualizar_contrasena(
+    datos: CambioContrasenaRequest,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_current_user)
+):
+    try:
+        id_usuario = int(usuario_actual["sub"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="La sesión no identifica una cuenta válida."
+        ) from error
+
+    return cambiar_contrasena(db, id_usuario, datos)
+
 
 @router.delete(
     "/{id_usuario}",

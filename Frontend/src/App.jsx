@@ -557,6 +557,13 @@ function App() {
                                         </ul>
                                     </div>
 
+                                    <Link
+                                        to="/perfil"
+                                        className="btn btn-outline-primary"
+                                    >
+                                        Mi perfil
+                                    </Link>
+
                                     <span
                                         className="fw-semibold"
                                         style={{

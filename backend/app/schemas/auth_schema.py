@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 # =========================================================
@@ -29,6 +29,25 @@ class LoginRequest(BaseModel):
     correo_usuario: EmailStr
 
     contrasena_usuario: str
+
+
+class RecuperarContrasenaRequest(BaseModel):
+
+    correo_usuario: EmailStr
+
+
+class VerificarCodigoRequest(BaseModel):
+
+    correo_usuario: EmailStr
+
+    codigo: str = Field(pattern=r"^\d{6}$")
+
+
+class CambioContrasenaRequest(BaseModel):
+
+    contrasena_actual: str
+
+    contrasena_nueva: str = Field(min_length=8)
 
 
 # =========================================================

@@ -169,5 +169,6 @@ from app.models.servicio import Servicio
 from app.models.servicio_evento import ServicioEvento
 from app.models.servicio_reserva import ServicioReserva
 from app.models.usuario import Usuario
+from app.models.recuperacion_contrasena import RecuperacionContrasena
 
 print("Modelos de TuEvento cargados correctamente")

@@ -1,5 +1,6 @@
 import {
     BrowserRouter,
+    Navigate,
     Routes,
     Route
 } from "react-router-dom";
@@ -8,6 +9,12 @@ import {
 import App from "../App";
 
 import Login from "../pages/Login";
+
+import RecuperarContrasena from "../pages/RecuperarContrasena";
+
+import EmpresaHome from "../pages/EmpresaHome";
+
+import Perfil from "../pages/Perfil";
 
 import RegistroUsuario from "../pages/RegistroUsuario";
 
@@ -31,6 +38,21 @@ import ResenasPage from "../pages/ResenasPage";
 
 import EmpresasPage from "../pages/EmpresasPage";
 
+function InicioPorRol() {
+    let usuario = null;
+    try {
+        usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    } catch {
+        usuario = null;
+    }
+
+    if (usuario?.rol?.toLowerCase() === "empresa") {
+        return <Navigate to="/empresa-home" replace />;
+    }
+
+    return <App />;
+}
+
 
 function AppRoutes() {
 
@@ -45,7 +67,7 @@ function AppRoutes() {
 
                 <Route
                     path="/"
-                    element={<App />}
+                    element={<InicioPorRol />}
                 />
 
 
@@ -55,6 +77,16 @@ function AppRoutes() {
                 <Route
                     path="/login"
                     element={<Login />}
+                />
+
+                <Route
+                    path="/recuperar-contrasena"
+                    element={<RecuperarContrasena />}
+                />
+
+                <Route
+                    path="/perfil"
+                    element={<Perfil />}
                 />
 
                 <Route
@@ -139,19 +171,7 @@ function AppRoutes() {
 
                 <Route
                     path="/empresa-home"
-                    element={
-                        <div className="p-5">
-
-                            <h1>
-                                Home Empresa
-                            </h1>
-
-                            <p>
-                                Página principal de la empresa.
-                            </p>
-
-                        </div>
-                    }
+                    element={<EmpresaHome />}
                 />
 
                 {/* EVIDENCIA: CATEGORÍAS */}

@@ -21,8 +21,6 @@ function Login() {
 
             const respuesta = await iniciarSesion(datosLogin);
 
-            console.log("Respuesta del login:", respuesta);
-
             // ==================================================
             // DECODIFICAR EL TOKEN JWT
             // El backend solo devuelve access_token y token_type,
@@ -104,6 +102,20 @@ function Login() {
                 );
             }
 
+            const rolNormalizado = rol?.toLowerCase();
+
+            if (rolNormalizado === "empresa") {
+                navigate("/empresa-home");
+                return;
+            }
+
+            if (
+                rolNormalizado === "admin" ||
+                rolNormalizado === "administrador"
+            ) {
+                navigate("/admin");
+                return;
+            }
 
             // ==================================================
             // REVISAR SI HABÍA UN SERVICIO PENDIENTE
@@ -214,26 +226,11 @@ function Login() {
 
 
             // ==================================================
-            // SI NO HABÍA SERVICIO PENDIENTE
-            // REDIRIGIR SEGÚN EL ROL
+            // SI NO HABÍA SERVICIO PENDIENTE,
+            // VOLVER A LA PÁGINA PRINCIPAL
             // ==================================================
 
-            if (rol === "empresa") {
-
-                navigate("/empresa-home");
-
-            } else if (
-                rol === "admin" ||
-                rol === "administrador"
-            ) {
-
-                navigate("/admin");
-
-            } else {
-
-                navigate("/cliente");
-
-            }
+            navigate("/");
 
         } catch (error) {
 
@@ -346,9 +343,9 @@ function Login() {
                                         Contraseña
                                     </label>
 
-                                    <a href="#">
+                                    <Link to="/recuperar-contrasena">
                                         ¿Olvidaste tu contraseña?
-                                    </a>
+                                    </Link>
 
                                 </div>
 

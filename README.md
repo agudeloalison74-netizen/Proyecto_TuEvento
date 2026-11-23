@@ -199,6 +199,12 @@ Token almacenado para mantener la sesión
 
 Las rutas que requieren autenticación estarán protegidas mediante el token.
 
+En “Mi perfil”, cada usuario puede consultar y actualizar su nombre, apellido y
+teléfono, y cambiar su contraseña. El correo se muestra como identificador de
+inicio de sesión. Las cuentas empresariales también consultan los datos de su
+empresa y sus servicios publicados; al volver a `/`, conservan su inicio
+empresarial en lugar de ver la portada de clientes.
+
 # 🔌 Comunicación Frontend - Backend
 
 El Frontend y el Backend son proyectos independientes, pero se comunican mediante una API REST.
@@ -292,6 +298,39 @@ Ejemplo:
 
 DATABASE_URL=tu_url_de_conexion
 SECRET_KEY=tu_clave_secreta
+
+Para habilitar la recuperación de contraseña, configura también el servidor SMTP
+del correo desde el que se enviarán los códigos y las contraseñas temporales:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=tu-correo@gmail.com
+SMTP_PASSWORD=tu-clave-de-aplicacion
+SMTP_FROM=tu-correo@gmail.com
+SMTP_USE_TLS=true
+SMTP_USE_SSL=false
+```
+
+En Gmail usa una contraseña de aplicación; no uses ni publiques la contraseña
+normal de la cuenta. Para SMTP con SSL directo, configura `SMTP_USE_SSL=true`,
+`SMTP_USE_TLS=false` y el puerto que indique tu proveedor.
+
+La recuperación requiere la tabla siguiente en PostgreSQL. Créala una vez en
+la base de datos del proyecto (las pruebas la crean automáticamente):
+
+```sql
+CREATE TABLE IF NOT EXISTS recuperacion_contrasena (
+    correo_usuario VARCHAR PRIMARY KEY,
+    codigo_hash VARCHAR NOT NULL,
+    expira_en DOUBLE PRECISION NOT NULL,
+    intentos INTEGER NOT NULL DEFAULT 0
+);
+```
+
+Los códigos expiran en 10 minutos y se invalidan después de verificarse o de
+cinco intentos fallidos. Se puede solicitar un código nuevo después de un
+minuto.
 Frontend
 
 El frontend puede utilizar un archivo .env para almacenar la URL del Backend.

@@ -96,3 +96,73 @@ def test_eliminar_usuario_inexistente(client):
     respuesta = client.delete("/api/v1/usuarios/9999")
 
     assert respuesta.status_code == 404
+
+
+def test_actualizar_mi_perfil_requiere_sesion_y_guarda_datos(client):
+    usuario = datos_usuario()
+    registro = client.post(
+        "/api/v1/usuarios/auth/registro",
+        json=usuario
+    )
+    assert registro.status_code == 201
+
+    login = client.post(
+        "/api/v1/usuarios/auth/login",
+        json={
+            "correo_usuario": usuario["correo_usuario"],
+            "contrasena_usuario": usuario["contrasena_usuario"]
+        }
+    )
+    token = login.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    perfil = client.get(
+        "/api/v1/usuarios/me",
+        headers=headers
+    )
+    assert perfil.status_code == 200
+    assert perfil.json()["correo_usuario"] == usuario["correo_usuario"]
+
+    actualizado = client.put(
+        "/api/v1/usuarios/me",
+        headers=headers,
+        json={
+            "nombre_usuario": "Laura Maria",
+            "apellido_usuario": "Gomez Ruiz",
+            "telefono_usuario": "3009998877"
+        }
+    )
+    assert actualizado.status_code == 200
+    assert actualizado.json()["nombre_usuario"] == "Laura Maria"
+    assert actualizado.json()["apellido_usuario"] == "Gomez Ruiz"
+    assert actualizado.json()["telefono_usuario"] == "3009998877"
+    assert actualizado.json()["correo_usuario"] == usuario["correo_usuario"]
+
+
+def test_actualizar_mi_perfil_rechaza_nombre_vacio(client):
+    usuario = datos_usuario()
+    client.post(
+        "/api/v1/usuarios/auth/registro",
+        json=usuario
+    )
+    login = client.post(
+        "/api/v1/usuarios/auth/login",
+        json={
+            "correo_usuario": usuario["correo_usuario"],
+            "contrasena_usuario": usuario["contrasena_usuario"]
+        }
+    )
+
+    respuesta = client.put(
+        "/api/v1/usuarios/me",
+        headers={
+            "Authorization": f"Bearer {login.json()['access_token']}"
+        },
+        json={
+            "nombre_usuario": " ",
+            "apellido_usuario": "Gomez",
+            "telefono_usuario": "3001234567"
+        }
+    )
+
+    assert respuesta.status_code == 422

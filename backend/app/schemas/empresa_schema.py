@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.servicio_schema import ServicioResponse
+
 
 class EmpresaBase(BaseModel):
 
@@ -21,3 +23,9 @@ class EmpresaResponse(EmpresaBase):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+class EmpresaServiciosResponse(BaseModel):
+
+    empresa: EmpresaResponse
+    servicios: list[ServicioResponse]

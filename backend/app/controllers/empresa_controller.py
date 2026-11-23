@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.empresa import Empresa
 from app.models.ciudad import Ciudad
 from app.models.usuario import Usuario
+from app.models.servicio import Servicio
 
 from app.schemas.empresa_schema import EmpresaCreate
 
@@ -20,6 +21,31 @@ def obtener_empresa(
     return db.query(Empresa).filter(
         Empresa.id_empresa == id_empresa
     ).first()
+
+
+def obtener_empresa_y_servicios(
+    db: Session,
+    id_usuario: int
+):
+    empresa = (
+        db.query(Empresa)
+        .filter(Empresa.id_usuario == id_usuario)
+        .first()
+    )
+
+    if not empresa:
+        return None
+
+    servicios = (
+        db.query(Servicio)
+        .filter(Servicio.id_empresa == empresa.id_empresa)
+        .all()
+    )
+
+    return {
+        "empresa": empresa,
+        "servicios": servicios
+    }
 
 
 def crear_empresa(

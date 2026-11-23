@@ -1,20 +1,288 @@
+import hashlib
+import hmac
+import logging
+import secrets
+import smtplib
+import time
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.usuario import Usuario
+from app.models.recuperacion_contrasena import RecuperacionContrasena
 
-from app.schemas.usuario_schema import UsuarioCreate
+from app.schemas.usuario_schema import UsuarioCreate, UsuarioPerfilUpdate
 
 from app.schemas.auth_schema import (
     RegistroRequest,
-    LoginRequest
+    LoginRequest,
+    RecuperarContrasenaRequest,
+    VerificarCodigoRequest,
+    CambioContrasenaRequest
 )
+
+from app.config.settings import SECRET_KEY
 
 from app.utils.security import (
     hash_password,
     verify_password,
     create_access_token
 )
+from app.utils.email import enviar_correo
+
+
+logger = logging.getLogger(__name__)
+CODIGO_RECUPERACION_VIDA_SEGUNDOS = 600
+MAX_INTENTOS_CODIGO = 5
+ESPERA_ENTRE_CODIGOS_SEGUNDOS = 60
+
+
+def _hash_codigo(correo: str, codigo: str) -> str:
+    mensaje = f"{correo.lower()}:{codigo}".encode("utf-8")
+    return hmac.new(
+        SECRET_KEY.encode("utf-8"),
+        mensaje,
+        hashlib.sha256
+    ).hexdigest()
+
+
+def solicitar_recuperacion_contrasena(
+    db: Session,
+    datos: RecuperarContrasenaRequest
+):
+    correo = str(datos.correo_usuario)
+    usuario = (
+        db.query(Usuario)
+        .filter(Usuario.correo_usuario == correo)
+        .first()
+    )
+
+    if usuario:
+        recuperacion = (
+            db.query(RecuperacionContrasena)
+            .filter(
+                RecuperacionContrasena.correo_usuario == correo
+            )
+            .first()
+        )
+        ahora = time.time()
+
+        if (
+            recuperacion
+            and recuperacion.expira_en
+            - CODIGO_RECUPERACION_VIDA_SEGUNDOS
+            + ESPERA_ENTRE_CODIGOS_SEGUNDOS
+            > ahora
+        ):
+            return {
+                "mensaje": (
+                    "Si el correo está registrado, recibirás un código "
+                    "de verificación."
+                )
+            }
+
+        codigo = f"{secrets.randbelow(1_000_000):06d}"
+
+        if recuperacion:
+            recuperacion.codigo_hash = _hash_codigo(correo, codigo)
+            recuperacion.expira_en = (
+                ahora + CODIGO_RECUPERACION_VIDA_SEGUNDOS
+            )
+            recuperacion.intentos = 0
+        else:
+            recuperacion = RecuperacionContrasena(
+                correo_usuario=correo,
+                codigo_hash=_hash_codigo(correo, codigo),
+                expira_en=(
+                    ahora + CODIGO_RECUPERACION_VIDA_SEGUNDOS
+                ),
+                intentos=0
+            )
+            db.add(recuperacion)
+
+        db.commit()
+
+        try:
+            enviar_correo(
+                correo,
+                "Código para recuperar tu contraseña - TuEvento",
+                (
+                    f"Tu código de verificación es: {codigo}\n\n"
+                    "Este código vence en 10 minutos y solo puede usarse "
+                    "una vez. Si no solicitaste este cambio, ignora este "
+                    "mensaje."
+                )
+            )
+        except RuntimeError as error:
+            logger.exception(
+                "No fue posible enviar el código de recuperación a %s",
+                correo
+            )
+            db.delete(recuperacion)
+            db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "El correo de recuperación no está configurado "
+                    "correctamente en el servidor."
+                )
+            ) from error
+        except (smtplib.SMTPException, OSError) as error:
+            logger.exception(
+                "No fue posible enviar el código de recuperación a %s",
+                correo
+            )
+            db.delete(recuperacion)
+            db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="No fue posible enviar el correo. Intenta más tarde."
+            ) from error
+
+    return {
+        "mensaje": (
+            "Si el correo está registrado, recibirás un código "
+            "de verificación."
+        )
+    }
+
+
+def verificar_codigo_recuperacion(
+    db: Session,
+    datos: VerificarCodigoRequest
+):
+    correo = str(datos.correo_usuario)
+    recuperacion = (
+        db.query(RecuperacionContrasena)
+        .filter(RecuperacionContrasena.correo_usuario == correo)
+        .first()
+    )
+
+    if not recuperacion:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    if recuperacion.expira_en <= time.time():
+        db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    codigo_correcto = hmac.compare_digest(
+        recuperacion.codigo_hash,
+        _hash_codigo(correo, datos.codigo)
+    )
+
+    if not codigo_correcto:
+        recuperacion.intentos += 1
+        if recuperacion.intentos >= MAX_INTENTOS_CODIGO:
+            db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    usuario = (
+        db.query(Usuario)
+        .filter(Usuario.correo_usuario == correo)
+        .first()
+    )
+
+    if not usuario:
+        db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    contrasena_temporal = secrets.token_urlsafe(15)
+
+    try:
+        enviar_correo(
+            correo,
+            "Tu nueva contraseña temporal - TuEvento",
+            (
+                f"Tu nueva contraseña temporal es: {contrasena_temporal}\n\n"
+                "Inicia sesión con ella y cámbiala desde tu perfil. "
+                "Si no solicitaste este cambio, contacta con soporte."
+            )
+        )
+    except RuntimeError as error:
+        logger.exception(
+            "No fue posible enviar la contraseña temporal a %s",
+            correo
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "El correo de recuperación no está configurado "
+                "correctamente en el servidor."
+            )
+        ) from error
+    except (smtplib.SMTPException, OSError) as error:
+        logger.exception(
+            "No fue posible enviar la contraseña temporal a %s",
+            correo
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="No fue posible enviar el correo. Intenta más tarde."
+        ) from error
+
+    usuario.contrasena_usuario = hash_password(contrasena_temporal)
+    db.delete(recuperacion)
+    db.commit()
+
+    return {
+        "mensaje": (
+            "La contraseña temporal fue enviada a tu correo. "
+            "Cámbiala desde tu perfil después de iniciar sesión."
+        )
+    }
+
+
+def cambiar_contrasena(
+    db: Session,
+    id_usuario: int,
+    datos: CambioContrasenaRequest
+):
+    usuario = (
+        db.query(Usuario)
+        .filter(Usuario.id_usuario == id_usuario)
+        .first()
+    )
+
+    if not usuario or not usuario.contrasena_usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No se encontró la cuenta."
+        )
+
+    if not verify_password(
+        datos.contrasena_actual,
+        usuario.contrasena_usuario
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña actual es incorrecta."
+        )
+
+    if datos.contrasena_actual == datos.contrasena_nueva:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La nueva contraseña debe ser diferente."
+        )
+
+    usuario.contrasena_usuario = hash_password(datos.contrasena_nueva)
+    db.commit()
+
+    return {"mensaje": "La contraseña se actualizó correctamente."}
 
 
 # =========================================================
@@ -47,6 +315,28 @@ def obtener_usuario(
         )
         .first()
     )
+
+
+def actualizar_perfil_usuario(
+    db: Session,
+    id_usuario: int,
+    datos: UsuarioPerfilUpdate
+):
+    usuario = obtener_usuario(db, id_usuario)
+
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+
+    usuario.nombre_usuario = datos.nombre_usuario.strip()
+    usuario.apellido_usuario = datos.apellido_usuario.strip()
+    usuario.telefono_usuario = datos.telefono_usuario.strip()
+    db.commit()
+    db.refresh(usuario)
+
+    return usuario
 
 
 # =========================================================
