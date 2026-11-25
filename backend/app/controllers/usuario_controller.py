@@ -17,7 +17,7 @@ from app.schemas.auth_schema import (
     RegistroRequest,
     LoginRequest,
     RecuperarContrasenaRequest,
-    VerificarCodigoRequest,
+    RestablecerContrasenaRequest,
     CambioContrasenaRequest
 )
 
@@ -147,14 +147,17 @@ def solicitar_recuperacion_contrasena(
     }
 
 
-def verificar_codigo_recuperacion(
+def restablecer_contrasena(
     db: Session,
-    datos: VerificarCodigoRequest
+    datos: RestablecerContrasenaRequest
 ):
     correo = str(datos.correo_usuario)
+
     recuperacion = (
         db.query(RecuperacionContrasena)
-        .filter(RecuperacionContrasena.correo_usuario == correo)
+        .filter(
+            RecuperacionContrasena.correo_usuario == correo
+        )
         .first()
     )
 
@@ -167,6 +170,7 @@ def verificar_codigo_recuperacion(
     if recuperacion.expira_en <= time.time():
         db.delete(recuperacion)
         db.commit()
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El código no es válido o ya venció."
@@ -179,9 +183,12 @@ def verificar_codigo_recuperacion(
 
     if not codigo_correcto:
         recuperacion.intentos += 1
+
         if recuperacion.intentos >= MAX_INTENTOS_CODIGO:
             db.delete(recuperacion)
+
         db.commit()
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El código no es válido o ya venció."
@@ -196,54 +203,22 @@ def verificar_codigo_recuperacion(
     if not usuario:
         db.delete(recuperacion)
         db.commit()
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El código no es válido o ya venció."
         )
 
-    contrasena_temporal = secrets.token_urlsafe(15)
+    usuario.contrasena_usuario = hash_password(
+        datos.contrasena_nueva
+    )
 
-    try:
-        enviar_correo(
-            correo,
-            "Tu nueva contraseña temporal - TuEvento",
-            (
-                f"Tu nueva contraseña temporal es: {contrasena_temporal}\n\n"
-                "Inicia sesión con ella y cámbiala desde tu perfil. "
-                "Si no solicitaste este cambio, contacta con soporte."
-            )
-        )
-    except RuntimeError as error:
-        logger.exception(
-            "No fue posible enviar la contraseña temporal a %s",
-            correo
-        )
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "El correo de recuperación no está configurado "
-                "correctamente en el servidor."
-            )
-        ) from error
-    except (smtplib.SMTPException, OSError) as error:
-        logger.exception(
-            "No fue posible enviar la contraseña temporal a %s",
-            correo
-        )
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="No fue posible enviar el correo. Intenta más tarde."
-        ) from error
-
-    usuario.contrasena_usuario = hash_password(contrasena_temporal)
+    # El código se elimina para que no pueda volver a usarse.
     db.delete(recuperacion)
     db.commit()
 
     return {
-        "mensaje": (
-            "La contraseña temporal fue enviada a tu correo. "
-            "Cámbiala desde tu perfil después de iniciar sesión."
-        )
+        "mensaje": "La contraseña se cambió correctamente."
     }
 
 

@@ -29,12 +29,17 @@ export const solicitarRecuperacion = async (correoUsuario) => {
     return response.data;
 };
 
-export const verificarCodigoRecuperacion = async (correoUsuario, codigo) => {
+export const restablecerContrasena = async (
+    correoUsuario,
+    codigo,
+    contrasenaNueva
+) => {
     const response = await api.post(
-        "/usuarios/auth/verificar-codigo",
+        "/usuarios/auth/restablecer-contrasena",
         {
             correo_usuario: correoUsuario,
-            codigo
+            codigo: codigo,
+            contrasena_nueva: contrasenaNueva
         }
     );
 

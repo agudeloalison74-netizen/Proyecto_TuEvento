@@ -11,9 +11,9 @@ from app.controllers.usuario_controller import (
     autenticar_usuario,
     eliminar_usuario,
     solicitar_recuperacion_contrasena,
-    verificar_codigo_recuperacion,
     cambiar_contrasena,
-    actualizar_perfil_usuario
+    actualizar_perfil_usuario,
+    restablecer_contrasena
 )
 
 from app.schemas.usuario_schema import (
@@ -27,8 +27,8 @@ from app.schemas.auth_schema import (
     LoginRequest,
     TokenResponse,
     RecuperarContrasenaRequest,
-    VerificarCodigoRequest,
-    CambioContrasenaRequest
+    CambioContrasenaRequest,
+    RestablecerContrasenaRequest
 )
 
 from app.utils.security import get_current_user
@@ -215,14 +215,12 @@ def recuperar_contrasena(
 ):
     return solicitar_recuperacion_contrasena(db, datos)
 
-
-@router.post("/auth/verificar-codigo")
-def verificar_codigo(
-    datos: VerificarCodigoRequest,
+@router.post("/auth/restablecer-contrasena")
+def restablecer_contrasena_route(
+    datos: RestablecerContrasenaRequest,
     db: Session = Depends(get_db)
 ):
-    return verificar_codigo_recuperacion(db, datos)
-
+    return restablecer_contrasena(db, datos)
 
 @router.put("/me/contrasena")
 def actualizar_contrasena(

@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { solicitarRecuperacion, verificarCodigoRecuperacion } from "../services/usuarioService";
-import "../styles/login.css";
+import {
+    solicitarRecuperacion,
+    restablecerContrasena
+} from "../services/usuarioService";
 
+import "../styles/login.css";
 
 function RecuperarContrasena() {
     const [correo, setCorreo] = useState("");
     const [codigo, setCodigo] = useState("");
+    const [contrasena, setContrasena] = useState("");
+    const [confirmarContrasena, setConfirmarContrasena] = useState("");
     const [paso, setPaso] = useState("correo");
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState("");
@@ -36,21 +41,37 @@ function RecuperarContrasena() {
         }
     };
 
-    const verificarCodigo = async (evento) => {
+    const cambiarContrasena = async (evento) => {
         evento.preventDefault();
         setError("");
+
+        if (contrasena !== confirmarContrasena) {
+            setError("Las contraseñas no coinciden.");
+            return;
+        }
+
+        if (contrasena.length < 8) {
+            setError("La contraseña debe tener mínimo 8 caracteres.");
+            return;
+        }
+
         setCargando(true);
 
         try {
-            const respuesta = await verificarCodigoRecuperacion(correo, codigo);
+            const respuesta = await restablecerContrasena(
+                correo,
+                codigo,
+                contrasena
+            );
+
             setMensaje(respuesta.mensaje);
             setPaso("listo");
-        } catch (errorVerificacion) {
+        } catch (errorCambio) {
             setError(
-                errorVerificacion.response?.data?.detail ||
+                errorCambio.response?.data?.detail ||
                 (
-                    errorVerificacion.response
-                        ? "El servidor no pudo verificar el código. Revisa los registros del backend."
+                    errorCambio.response
+                        ? "No se pudo cambiar la contraseña. Revisa los registros del backend."
                         : "No se pudo conectar con el servidor. Verifica que el backend esté ejecutándose."
                 )
             );
@@ -64,12 +85,17 @@ function RecuperarContrasena() {
             <div className="login-container">
                 <div className="login-visual">
                     <div className="login-visual-content">
-                        <div className="login-brand">Tu<span>Evento</span></div>
+                        <div className="login-brand">
+                            Tu<span>Evento</span>
+                        </div>
+
                         <div className="login-decoration">🔐</div>
+
                         <h1>Recupera el acceso a tu cuenta.</h1>
+
                         <p>
-                            Verificaremos tu correo antes de enviarte una
-                            contraseña temporal.
+                            Verifica tu correo y crea una contraseña nueva
+                            para volver a ingresar a TuEvento.
                         </p>
                     </div>
                 </div>
@@ -77,39 +103,64 @@ function RecuperarContrasena() {
                 <div className="login-form-container">
                     <div className="login-form">
                         <div className="login-header">
-                            <span className="login-label">RECUPERACIÓN DE CUENTA</span>
+                            <span className="login-label">
+                                RECUPERACIÓN DE CUENTA
+                            </span>
+
                             <h2>¿Olvidaste tu contraseña?</h2>
+
                             <p>
-                                {paso === "correo" && "Te enviaremos un código de verificación."}
-                                {paso === "codigo" && "Ingresa el código enviado a tu correo."}
-                                {paso === "listo" && "Revisa tu correo para iniciar sesión."}
+                                {paso === "correo" &&
+                                    "Te enviaremos un código de verificación."}
+
+                                {paso === "codigo" &&
+                                    "Ingresa el código y crea tu nueva contraseña."}
+
+                                {paso === "listo" &&
+                                    "Tu contraseña se cambió correctamente."}
                             </p>
                         </div>
 
                         {paso === "correo" && (
                             <form onSubmit={enviarCodigo}>
                                 <div className="form-group">
-                                    <label htmlFor="correo-recuperacion">Correo electrónico</label>
+                                    <label htmlFor="correo-recuperacion">
+                                        Correo electrónico
+                                    </label>
+
                                     <input
                                         id="correo-recuperacion"
                                         type="email"
                                         autoComplete="email"
                                         value={correo}
-                                        onChange={(evento) => setCorreo(evento.target.value)}
+                                        onChange={(evento) =>
+                                            setCorreo(evento.target.value)
+                                        }
                                         required
                                     />
                                 </div>
-                                <button className="login-button" type="submit" disabled={cargando}>
+
+                                <button
+                                    className="login-button"
+                                    type="submit"
+                                    disabled={cargando}
+                                >
                                     {cargando ? "Enviando..." : "Enviar código"}
                                 </button>
                             </form>
                         )}
 
                         {paso === "codigo" && (
-                            <form onSubmit={verificarCodigo}>
-                                <p className="recovery-feedback" role="status">{mensaje}</p>
+                            <form onSubmit={cambiarContrasena}>
+                                <p className="recovery-feedback" role="status">
+                                    {mensaje}
+                                </p>
+
                                 <div className="form-group">
-                                    <label htmlFor="codigo-recuperacion">Código de 6 dígitos</label>
+                                    <label htmlFor="codigo-recuperacion">
+                                        Código de 6 dígitos
+                                    </label>
+
                                     <input
                                         id="codigo-recuperacion"
                                         type="text"
@@ -118,24 +169,79 @@ function RecuperarContrasena() {
                                         pattern="[0-9]{6}"
                                         maxLength="6"
                                         value={codigo}
-                                        onChange={(evento) => setCodigo(evento.target.value)}
+                                        onChange={(evento) =>
+                                            setCodigo(evento.target.value)
+                                        }
                                         required
                                     />
                                 </div>
-                                <button className="login-button" type="submit" disabled={cargando}>
-                                    {cargando ? "Verificando..." : "Verificar y enviar contraseña"}
+
+                                <div className="form-group">
+                                    <label htmlFor="nueva-contrasena">
+                                        Nueva contraseña
+                                    </label>
+
+                                    <input
+                                        id="nueva-contrasena"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        minLength="8"
+                                        value={contrasena}
+                                        onChange={(evento) =>
+                                            setContrasena(evento.target.value)
+                                        }
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="confirmar-contrasena">
+                                        Confirmar nueva contraseña
+                                    </label>
+
+                                    <input
+                                        id="confirmar-contrasena"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        minLength="8"
+                                        value={confirmarContrasena}
+                                        onChange={(evento) =>
+                                            setConfirmarContrasena(
+                                                evento.target.value
+                                            )
+                                        }
+                                        required
+                                    />
+                                </div>
+
+                                <button
+                                    className="login-button"
+                                    type="submit"
+                                    disabled={cargando}
+                                >
+                                    {cargando
+                                        ? "Cambiando contraseña..."
+                                        : "Cambiar contraseña"}
                                 </button>
                             </form>
                         )}
 
                         {paso === "listo" && (
-                            <p className="recovery-feedback" role="status">{mensaje}</p>
+                            <p className="recovery-feedback" role="status">
+                                {mensaje}
+                            </p>
                         )}
 
-                        {error && <p className="recovery-error" role="alert">{error}</p>}
+                        {error && (
+                            <p className="recovery-error" role="alert">
+                                {error}
+                            </p>
+                        )}
 
                         <div className="register-question recovery-login">
-                            <Link to="/login">Volver a iniciar sesión</Link>
+                            <Link to="/login">
+                                Volver a iniciar sesión
+                            </Link>
                         </div>
                     </div>
                 </div>
