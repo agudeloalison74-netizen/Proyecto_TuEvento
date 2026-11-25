@@ -316,6 +316,13 @@ En Gmail usa una contraseña de aplicación; no uses ni publiques la contraseña
 normal de la cuenta. Para SMTP con SSL directo, configura `SMTP_USE_SSL=true`,
 `SMTP_USE_TLS=false` y el puerto que indique tu proveedor.
 
+Las reseñas ahora guardan una puntuación de 1 a 5 y una respuesta opcional de la
+empresa; las solicitudes guardan el tipo de evento, la cantidad de asistentes y
+el mensaje del cliente. Si la base de datos ya existía, ejecuta una vez
+`database/7_ACTUALIZAR_RESENAS.sql` y luego
+`database/8_ACTUALIZAR_SOLICITUDES.sql`. Las bases nuevas incluyen esos campos
+al ejecutar `database/1_CREAR_TABLAS.sql`.
+
 La recuperación requiere la tabla siguiente en PostgreSQL. Créala una vez en
 la base de datos del proyecto (las pruebas la crean automáticamente):
 

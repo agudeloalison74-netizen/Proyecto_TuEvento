@@ -622,6 +622,13 @@ function SolicitudEnviada() {
                                     Volver a mi evento
                                 </Link>
 
+                                <Link
+                                    to="/cliente/historial"
+                                    className="btn btn-outline-primary"
+                                >
+                                    Ver historial de eventos
+                                </Link>
+
                             </div>
 
                         </div>

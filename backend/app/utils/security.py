@@ -116,3 +116,42 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido o expirado"
         )
+
+
+def get_admin_user(
+    usuario_actual: dict = Depends(get_current_user)
+):
+    if usuario_actual.get("rol", "").lower() not in {
+        "admin",
+        "administrador"
+    }:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta acción es exclusiva para administradores."
+        )
+
+    return usuario_actual
+
+
+def get_cliente_user(
+    usuario_actual: dict = Depends(get_current_user)
+):
+    if usuario_actual.get("rol", "").lower() != "cliente":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta acción es exclusiva para cuentas de cliente."
+        )
+
+    return usuario_actual
+
+
+def get_empresa_user(
+    usuario_actual: dict = Depends(get_current_user)
+):
+    if usuario_actual.get("rol", "").lower() != "empresa":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta acción es exclusiva para cuentas empresariales."
+        )
+
+    return usuario_actual

@@ -34,9 +34,11 @@ import CategoriasPage from "../pages/CategoriasPage";
 
 import DepartamentosPage from "../pages/DepartamentosPage";
 
-import ResenasPage from "../pages/ResenasPage";
-
 import EmpresasPage from "../pages/EmpresasPage";
+import AdminPage from "../pages/AdminPage";
+import HistorialEventos from "../pages/HistorialEventos";
+import ComentariosCliente from "../pages/ComentariosCliente";
+import SolicitudesEmpresa from "../pages/SolicitudesEmpresa";
 
 function InicioPorRol() {
     let usuario = null;
@@ -50,7 +52,89 @@ function InicioPorRol() {
         return <Navigate to="/empresa-home" replace />;
     }
 
+    if (["admin", "administrador"].includes(usuario?.rol?.toLowerCase())) {
+        return <Navigate to="/admin" replace />;
+    }
+
     return <App />;
+}
+
+function AdminRoute() {
+    let usuario = null;
+    try {
+        usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    } catch {
+        usuario = null;
+    }
+
+    const autenticado =
+        localStorage.getItem("usuarioAutenticado") === "true" &&
+        Boolean(localStorage.getItem("token"));
+    const esAdmin = ["admin", "administrador"].includes(
+        usuario?.rol?.toLowerCase()
+    );
+
+    if (!autenticado) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (!esAdmin) {
+        return usuario?.rol?.toLowerCase() === "empresa"
+            ? <Navigate to="/empresa-home" replace />
+            : <Navigate to="/" replace />;
+    }
+
+    return <AdminPage />;
+}
+
+function RutaConRol({ rol, children }) {
+    let usuario = null;
+    try {
+        usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    } catch {
+        usuario = null;
+    }
+
+    const autenticado =
+        localStorage.getItem("usuarioAutenticado") === "true" &&
+        Boolean(localStorage.getItem("token"));
+    const rolActual = usuario?.rol?.toLowerCase();
+
+    if (!autenticado) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (rolActual !== rol) {
+        if (["admin", "administrador"].includes(rolActual)) {
+            return <Navigate to="/admin" replace />;
+        }
+        return rolActual === "empresa"
+            ? <Navigate to="/empresa-home" replace />
+            : <Navigate to="/" replace />;
+    }
+
+    return children;
+}
+
+function RutaResenas() {
+    let usuario = null;
+    try {
+        usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    } catch {
+        usuario = null;
+    }
+
+    const rol = usuario?.rol?.toLowerCase();
+    if (rol === "empresa") {
+        return <Navigate to="/empresa/solicitudes?seccion=comentarios" replace />;
+    }
+    if (rol === "cliente") {
+        return <Navigate to="/cliente/comentarios" replace />;
+    }
+    if (["admin", "administrador"].includes(rol)) {
+        return <Navigate to="/admin" replace />;
+    }
+    return <Navigate to="/login" replace />;
 }
 
 
@@ -87,6 +171,33 @@ function AppRoutes() {
                 <Route
                     path="/perfil"
                     element={<Perfil />}
+                />
+
+                <Route
+                    path="/cliente/historial"
+                    element={
+                        <RutaConRol rol="cliente">
+                            <HistorialEventos />
+                        </RutaConRol>
+                    }
+                />
+
+                <Route
+                    path="/cliente/comentarios"
+                    element={
+                        <RutaConRol rol="cliente">
+                            <ComentariosCliente />
+                        </RutaConRol>
+                    }
+                />
+
+                <Route
+                    path="/empresa/solicitudes"
+                    element={
+                        <RutaConRol rol="empresa">
+                            <SolicitudesEmpresa />
+                        </RutaConRol>
+                    }
                 />
 
                 <Route
@@ -174,6 +285,11 @@ function AppRoutes() {
                     element={<EmpresaHome />}
                 />
 
+                <Route
+                    path="/admin"
+                    element={<AdminRoute />}
+                />
+
                 {/* EVIDENCIA: CATEGORÍAS */}
 
                 <Route
@@ -196,7 +312,7 @@ function AppRoutes() {
 
                 <Route
                     path="/resenas"
-                    element={<ResenasPage />}
+                    element={<RutaResenas />}
                 />
 
 

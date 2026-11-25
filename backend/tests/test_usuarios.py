@@ -1,5 +1,6 @@
 
 from tests.test_autenticacion import datos_usuario
+from tests.conftest import admin_headers
 
 
 # CP-USU-01: Buscar usuario existente
@@ -78,7 +79,8 @@ def test_eliminar_usuario_existente(client):
     id_usuario = registro.json()["id_usuario"]
 
     respuesta = client.delete(
-        f"/api/v1/usuarios/{id_usuario}"
+        f"/api/v1/usuarios/{id_usuario}",
+        headers=admin_headers(client)
     )
 
     assert respuesta.status_code == 204
@@ -93,9 +95,81 @@ def test_eliminar_usuario_existente(client):
 # CP-USU-06: Eliminar usuario inexistente
 def test_eliminar_usuario_inexistente(client):
 
-    respuesta = client.delete("/api/v1/usuarios/9999")
+    respuesta = client.delete(
+        "/api/v1/usuarios/9999",
+        headers=admin_headers(client)
+    )
 
     assert respuesta.status_code == 404
+
+
+def test_listar_usuarios_requiere_rol_administrador(client):
+    usuario = datos_usuario()
+    client.post("/api/v1/usuarios/auth/registro", json=usuario)
+    login = client.post(
+        "/api/v1/usuarios/auth/login",
+        json={
+            "correo_usuario": usuario["correo_usuario"],
+            "contrasena_usuario": usuario["contrasena_usuario"]
+        }
+    )
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    assert client.get("/api/v1/usuarios/").status_code == 401
+    assert client.get("/api/v1/usuarios/", headers=headers).status_code == 403
+    assert client.get(
+        "/api/v1/usuarios/",
+        headers=admin_headers(client)
+    ).status_code == 200
+
+
+def test_administrador_puede_actualizar_usuario(client):
+    usuario = datos_usuario()
+    registro = client.post(
+        "/api/v1/usuarios/auth/registro",
+        json=usuario
+    )
+
+    respuesta = client.put(
+        f"/api/v1/usuarios/{registro.json()['id_usuario']}",
+        headers=admin_headers(client),
+        json={
+            "nombre_usuario": "Camila",
+            "apellido_usuario": "Guerrero",
+            "telefono_usuario": "3007654321"
+        }
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["nombre_usuario"] == "Camila"
+    assert respuesta.json()["apellido_usuario"] == "Guerrero"
+
+
+def test_usuario_no_administrador_no_puede_actualizar_otro_usuario(client):
+    usuario = datos_usuario()
+    registro = client.post(
+        "/api/v1/usuarios/auth/registro",
+        json=usuario
+    )
+    login = client.post(
+        "/api/v1/usuarios/auth/login",
+        json={
+            "correo_usuario": usuario["correo_usuario"],
+            "contrasena_usuario": usuario["contrasena_usuario"]
+        }
+    )
+
+    respuesta = client.put(
+        f"/api/v1/usuarios/{registro.json()['id_usuario']}",
+        headers={"Authorization": f"Bearer {login.json()['access_token']}"},
+        json={
+            "nombre_usuario": "Camila",
+            "apellido_usuario": "Guerrero",
+            "telefono_usuario": "3007654321"
+        }
+    )
+
+    assert respuesta.status_code == 403
 
 
 def test_actualizar_mi_perfil_requiere_sesion_y_guarda_datos(client):

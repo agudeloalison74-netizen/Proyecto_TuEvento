@@ -1,4 +1,11 @@
-from sqlalchemy import Column, Integer, Date, Text, ForeignKey
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    Date,
+    ForeignKey,
+    Integer,
+    Text
+)
 
 from app.config.database import Base
 
@@ -6,6 +13,12 @@ from app.config.database import Base
 class Resena(Base):
 
     __tablename__ = "resena"
+    __table_args__ = (
+        CheckConstraint(
+            "calificacion IS NULL OR calificacion BETWEEN 1 AND 5",
+            name="ck_resena_calificacion_range"
+        ),
+    )
 
     id_resena = Column(
         Integer,
@@ -19,6 +32,16 @@ class Resena(Base):
     )
 
     descripcion_resena = Column(
+        Text,
+        nullable=True
+    )
+
+    calificacion = Column(
+        Integer,
+        nullable=True
+    )
+
+    respuesta_empresa = Column(
         Text,
         nullable=True
     )

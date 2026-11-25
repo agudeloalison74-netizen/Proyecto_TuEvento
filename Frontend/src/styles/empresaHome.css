@@ -45,6 +45,22 @@
     gap: 12px;
 }
 
+.empresa-home-logout {
+    padding: 11px 16px;
+    border: 1px solid #6c2bd9;
+    border-radius: 8px;
+    background: #6c2bd9;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.empresa-home-logout:hover {
+    background: #5520b5;
+}
+
 .empresa-servicios {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

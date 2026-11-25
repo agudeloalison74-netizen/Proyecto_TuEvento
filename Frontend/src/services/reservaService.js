@@ -12,6 +12,24 @@ export const crearReserva = async (datosReserva) => {
     return response.data;
 };
 
+export const listarMisReservas = async () => {
+    const response = await api.get("/reservas/mis-reservas");
+    return response.data;
+};
+
+export const listarSolicitudesEmpresa = async () => {
+    const response = await api.get("/reservas/solicitudes-empresa");
+    return response.data;
+};
+
+export const actualizarEstadoReserva = async (idReserva, estado) => {
+    const response = await api.patch(
+        `/reservas/${idReserva}/estado`,
+        { estado }
+    );
+    return response.data;
+};
+
 // =========================================================
 // CREAR VARIAS RESERVAS (una por cada servicio seleccionado)
 // Si alguna falla, se lanza el error para que el componente
@@ -27,6 +45,9 @@ export const crearReservasDeEvento = async (serviciosSeleccionados, datosComunes
             fecha_hora: datosComunes.fecha_hora,
             estado: datosComunes.estado,
             precio_total: Number(servicio.precio_referencia || 0),
+            tipo_evento: datosComunes.tipo_evento,
+            cantidad_personas: datosComunes.cantidad_personas,
+            mensaje: datosComunes.mensaje,
         };
 
         const reserva = await crearReserva(payload);

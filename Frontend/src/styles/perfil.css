@@ -239,6 +239,44 @@
     grid-column: 1 / -1;
 }
 
+.perfil-activity-card {
+    grid-column: 1 / -1;
+}
+
+.perfil-activity-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.perfil-activity-actions a,
+.perfil-company-request-link {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #a78bfa;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.perfil-activity-actions a:hover,
+.perfil-company-request-link:hover {
+    background: #6c2bd9;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.perfil-company-request-link {
+    margin-top: 16px;
+}
+
 .perfil-company-details {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -287,6 +325,10 @@
     .perfil-company-card {
         grid-column: auto;
     }
+
+    .perfil-activity-card {
+        grid-column: auto;
+    }
 }
 
 @media (max-width: 560px) {
@@ -319,7 +361,8 @@
     }
 
     .perfil-fields,
-    .perfil-company-details {
+    .perfil-company-details,
+    .perfil-activity-actions {
         grid-template-columns: 1fr;
     }
 }

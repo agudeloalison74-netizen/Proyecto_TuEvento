@@ -1,5 +1,6 @@
 
 from tests.test_autenticacion import datos_usuario
+from tests.conftest import admin_headers
 
 from app.models.departamento import Departamento
 from app.models.ciudad import Ciudad
@@ -139,7 +140,8 @@ def test_eliminar_empresa_existente(client, db):
     client.post("/api/v1/empresas/", json=empresa)
 
     respuesta = client.delete(
-        f"/api/v1/empresas/{empresa['id_empresa']}"
+        f"/api/v1/empresas/{empresa['id_empresa']}",
+        headers=admin_headers(client)
     )
 
     assert respuesta.status_code == 204
@@ -153,9 +155,23 @@ def test_eliminar_empresa_existente(client, db):
 
 # CP-EMP-09: Eliminar empresa inexistente
 def test_eliminar_empresa_inexistente(client):
-    respuesta = client.delete("/api/v1/empresas/999999999")
+    respuesta = client.delete(
+        "/api/v1/empresas/999999999",
+        headers=admin_headers(client)
+    )
 
     assert respuesta.status_code == 404
+
+
+def test_eliminar_empresa_requiere_administrador(client, db):
+    empresa = preparar_datos_empresa(client, db)
+    client.post("/api/v1/empresas/", json=empresa)
+
+    respuesta = client.delete(
+        f"/api/v1/empresas/{empresa['id_empresa']}"
+    )
+
+    assert respuesta.status_code == 401
 
 
 def test_empresa_solo_ve_sus_servicios(client, db):

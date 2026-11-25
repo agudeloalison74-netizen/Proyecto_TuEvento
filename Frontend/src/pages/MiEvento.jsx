@@ -188,7 +188,10 @@ function MiEvento() {
                     {
                         id_usuario: usuario.id_usuario,
                         fecha_hora: fechaHoraISO,
-                        estado: "PENDIENTE"
+                        estado: "PENDIENTE",
+                        tipo_evento: tipoEvento,
+                        cantidad_personas: Number(cantidadPersonas),
+                        mensaje
                     }
                 );
 

@@ -1,5 +1,16 @@
 import api from "./api";
 
+export const cerrarSesion = () => {
+    [
+        "token",
+        "usuario",
+        "usuarioAutenticado",
+        "tipoUsuario",
+        "reservaPendiente",
+        "reservaTemporal"
+    ].forEach((clave) => localStorage.removeItem(clave));
+};
+
 // Registrar usuario
 export const registrarUsuario = async (datosUsuario) => {
     const response = await api.post(

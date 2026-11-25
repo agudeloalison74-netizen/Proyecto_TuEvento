@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
+import { cerrarSesion } from "../services/usuarioService";
 import "../styles/empresaHome.css";
 
 
 function EmpresaHome() {
+    const navigate = useNavigate();
     const [datos, setDatos] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
+
+    const handleCerrarSesion = () => {
+        cerrarSesion();
+        navigate("/");
+    };
 
     useEffect(() => {
         let activa = true;
@@ -56,6 +63,16 @@ function EmpresaHome() {
                     <Link to="/empresa-home#servicios" className="empresa-home-link">
                         Mis servicios
                     </Link>
+                    <Link to="/empresa/solicitudes" className="empresa-home-link">
+                        Solicitudes de servicios
+                    </Link>
+                    <button
+                        type="button"
+                        className="empresa-home-logout"
+                        onClick={handleCerrarSesion}
+                    >
+                        Cerrar sesión
+                    </button>
                 </div>
             </header>
 

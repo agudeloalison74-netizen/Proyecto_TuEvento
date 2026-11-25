@@ -89,6 +89,7 @@ function Perfil() {
     }, [navigate]);
 
     const esEmpresa = sesion?.rol?.toLowerCase() === "empresa";
+    const esCliente = sesion?.rol?.toLowerCase() === "cliente";
     const paginaPrincipal = esEmpresa ? "/empresa-home" : "/";
     const nombreCompleto = perfil
         ? `${perfil.nombre_usuario} ${perfil.apellido_usuario}`.trim()
@@ -360,6 +361,32 @@ function Perfil() {
                                     <Link className="perfil-text-link" to="/empresa-home">
                                         Administrar mis servicios
                                     </Link>
+                                    <Link
+                                        className="perfil-primary-button perfil-company-request-link"
+                                        to="/empresa/solicitudes"
+                                    >
+                                        Solicitudes de servicios
+                                    </Link>
+                                </section>
+                            )}
+
+                            {esCliente && (
+                                <section className="perfil-card perfil-activity-card">
+                                    <div className="perfil-card-heading">
+                                        <div>
+                                            <span className="perfil-card-kicker">TU ACTIVIDAD</span>
+                                            <h2>Eventos y comentarios</h2>
+                                        </div>
+                                        <span className="perfil-card-icon" aria-hidden="true">♡</span>
+                                    </div>
+                                    <div className="perfil-activity-actions">
+                                        <Link to="/cliente/historial">
+                                            Historial de eventos
+                                        </Link>
+                                        <Link to="/cliente/comentarios">
+                                            Comentarios hechos
+                                        </Link>
+                                    </div>
                                 </section>
                             )}
                         </div>

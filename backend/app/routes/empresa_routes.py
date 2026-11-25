@@ -3,7 +3,7 @@ from fastapi import status
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.utils.security import get_current_user
+from app.utils.security import get_admin_user, get_current_user
 
 from app.controllers.empresa_controller import (
     obtener_empresas,
@@ -123,7 +123,8 @@ def registrar_empresa(
 )
 def eliminar_empresa_route(
     id_empresa: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_admin_user)
 ):
     empresa = eliminar_empresa(
         db,

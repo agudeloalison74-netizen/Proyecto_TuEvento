@@ -13,6 +13,7 @@ import evento6 from "./assets/img/evento6.jpg";
 
 import { obtenerEmpresas } from "./services/empresaService";
 import api from "./services/api";
+import { cerrarSesion } from "./services/usuarioService";
 
 
 function App() {
@@ -264,26 +265,7 @@ function App() {
     // =========================
 
     const handleCerrarSesion = () => {
-
-        localStorage.removeItem(
-            "usuarioAutenticado"
-        );
-
-        localStorage.removeItem(
-            "usuario"
-        );
-
-        localStorage.removeItem(
-            "tipoUsuario"
-        );
-
-        localStorage.removeItem(
-            "reservaPendiente"
-        );
-
-        localStorage.removeItem(
-            "reservaTemporal"
-        );
+        cerrarSesion();
 
         setUsuarioAutenticado(
             false

@@ -31,19 +31,31 @@ function DetalleEmpresa() {
 
     }
 
-    const handleReservar = () => {
+    const handleReservar = (servicio) => {
 
         const autenticado =
             localStorage.getItem("usuarioAutenticado") === "true";
 
         if (!autenticado) {
-
+            localStorage.setItem(
+                "servicioPendiente",
+                JSON.stringify({
+                    ...servicio,
+                    nombre_empresa: empresa.nombre
+                })
+            );
             navigate("/login");
             return;
-
         }
 
-        navigate("/reserva");
+        navigate("/reserva", {
+            state: {
+                servicio: {
+                    ...servicio,
+                    nombre_empresa: empresa.nombre
+                }
+            }
+        });
 
     };
 
@@ -125,7 +137,13 @@ function DetalleEmpresa() {
                                                         servicio.precio_referencia || 0
                                                     ).toLocaleString("es-CO")}
                                                 </strong>
-
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-primary mt-2"
+                                                    onClick={() => handleReservar(servicio)}
+                                                >
+                                                    Solicitar este servicio
+                                                </button>
                                             </div>
 
                                         ))
@@ -139,13 +157,6 @@ function DetalleEmpresa() {
                                     )}
 
                                 </div>
-
-                                <button
-                                    className="btn btn-primary btn-lg mt-4"
-                                    onClick={handleReservar}
-                                >
-                                    Reservar servicio
-                                </button>
 
                             </div>
 

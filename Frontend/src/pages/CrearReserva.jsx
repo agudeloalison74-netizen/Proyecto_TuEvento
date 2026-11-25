@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "../styles/reserva.css";
+import { crearReserva } from "../services/reservaService";
 
 
 function CrearReserva() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const servicio = location.state?.servicio;
 
 
     const [fecha, setFecha] = useState("");
@@ -14,15 +17,16 @@ function CrearReserva() {
     const [tipoEvento, setTipoEvento] = useState("");
     const [cantidadPersonas, setCantidadPersonas] = useState("");
     const [mensaje, setMensaje] = useState("");
+    const [errorEnvio, setErrorEnvio] = useState("");
+    const [enviando, setEnviando] = useState(false);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
+        setErrorEnvio("");
 
-
-        const usuarioAutenticado =
-            localStorage.getItem("usuarioAutenticado") === "true";
+        const usuarioAutenticado = localStorage.getItem("usuarioAutenticado") === "true";
 
 
         if (!usuarioAutenticado) {
@@ -32,32 +36,72 @@ function CrearReserva() {
             return;
         }
 
+        if (!servicio?.id_servicio) {
+            setErrorEnvio("Selecciona un servicio antes de enviar la solicitud.");
+            return;
+        }
 
-        // Por ahora guardamos la solicitud localmente.
-        // Después la conectaremos con FastAPI.
+        let usuario = null;
+        try {
+            usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+        } catch {
+            usuario = null;
+        }
 
-        const reserva = {
+        if (!usuario?.id_usuario) {
+            navigate("/login");
+            return;
+        }
 
-            fecha,
-            hora,
-            tipoEvento,
-            cantidadPersonas,
-            mensaje,
+        setEnviando(true);
+        try {
+            const reserva = await crearReserva({
+                id_usuario: usuario.id_usuario,
+                id_servicio: servicio.id_servicio,
+                fecha_hora: `${fecha}T${hora}:00`,
+                estado: "PENDIENTE",
+                precio_total: Number(servicio.precio_referencia || 0),
+                tipo_evento: tipoEvento,
+                cantidad_personas: Number(cantidadPersonas),
+                mensaje
+            });
 
-            estado: "PENDIENTE"
+            localStorage.setItem("eventoTemporal", JSON.stringify({
+                servicios: [{ ...servicio, id_reserva: reserva.id_reserva }],
+                fecha,
+                hora,
+                tipoEvento,
+                cantidadPersonas,
+                mensaje,
+                total: Number(servicio.precio_referencia || 0),
+                estado: reserva.estado
+            }));
 
-        };
-
-
-        localStorage.setItem(
-            "reservaTemporal",
-            JSON.stringify(reserva)
-        );
-
-
-        navigate("/solicitud-enviada");
+            navigate("/solicitud-enviada");
+        } catch (error) {
+            setErrorEnvio(
+                error.response?.data?.detail ||
+                "No se pudo enviar la solicitud. Intenta nuevamente."
+            );
+        } finally {
+            setEnviando(false);
+        }
 
     };
+
+    if (!servicio) {
+        return (
+            <div className="reserva-page">
+                <div className="container py-5">
+                    <div className="reserva-card text-center">
+                        <h1>Selecciona un servicio</h1>
+                        <p>Debes elegir el servicio que quieres solicitar antes de continuar.</p>
+                        <Link to="/" className="btn btn-primary">Explorar servicios</Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
 
     return (
@@ -90,8 +134,14 @@ function CrearReserva() {
 
                     <p>
                         Completa la información para enviar
-                        tu solicitud a la empresa.
+                        tu solicitud a {servicio.nombre_empresa || "la empresa"}.
                     </p>
+                    <div className="reserva-info">
+                        <strong>{servicio.nombre_servicio}</strong>
+                        <span>
+                            ${Number(servicio.precio_referencia || 0).toLocaleString("es-CO")}
+                        </span>
+                    </div>
 
                 </div>
 
@@ -278,11 +328,18 @@ function CrearReserva() {
 
 
 
+                                {errorEnvio && (
+                                    <p className="alert alert-danger" role="alert">
+                                        {errorEnvio}
+                                    </p>
+                                )}
+
                                 <button
                                     type="submit"
                                     className="btn-reserva-submit"
+                                    disabled={enviando}
                                 >
-                                    Enviar solicitud
+                                    {enviando ? "Enviando solicitud..." : "Enviar solicitud"}
                                 </button>
 
 

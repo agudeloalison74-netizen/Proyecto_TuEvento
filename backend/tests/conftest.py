@@ -34,6 +34,32 @@ TestingSessionLocal = sessionmaker(
 )
 
 
+def admin_headers(client):
+    usuario = {
+        "nombre_usuario": "Admin",
+        "apellido_usuario": "Prueba",
+        "correo_usuario": "admin@test.com",
+        "telefono_usuario": "3001234567",
+        "contrasena_usuario": "Admin#2026",
+        "rol": "Administrador"
+    }
+    registro = client.post(
+        "/api/v1/usuarios/auth/registro",
+        json=usuario
+    )
+    assert registro.status_code == 201
+
+    login = client.post(
+        "/api/v1/usuarios/auth/login",
+        json={
+            "correo_usuario": usuario["correo_usuario"],
+            "contrasena_usuario": usuario["contrasena_usuario"]
+        }
+    )
+    assert login.status_code == 200
+    return {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+
 @pytest.fixture
 def db():
 

@@ -31,7 +31,7 @@ from app.schemas.auth_schema import (
     RestablecerContrasenaRequest
 )
 
-from app.utils.security import get_current_user
+from app.utils.security import get_admin_user, get_current_user
 
 
 # =========================================================
@@ -54,7 +54,7 @@ router = APIRouter(
 )
 def listar_usuarios(
     db: Session = Depends(get_db),
-    usuario_actual: dict = Depends(get_current_user)
+    usuario_actual: dict = Depends(get_admin_user)
 ):
 
     return obtener_usuarios(db)
@@ -107,6 +107,19 @@ def actualizar_mi_perfil(
             detail="La sesión no identifica una cuenta válida."
         ) from error
 
+    return actualizar_perfil_usuario(db, id_usuario, datos)
+
+
+@router.put(
+    "/{id_usuario}",
+    response_model=UsuarioResponse
+)
+def actualizar_usuario(
+    id_usuario: int,
+    datos: UsuarioPerfilUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_admin_user)
+):
     return actualizar_perfil_usuario(db, id_usuario, datos)
 
 
@@ -245,8 +258,14 @@ def actualizar_contrasena(
 )
 def eliminar_usuario_route(
     id_usuario: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(get_admin_user)
 ):
+    if str(usuario_actual.get("sub")) == str(id_usuario):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes eliminar tu propia cuenta de administrador."
+        )
 
     usuario = eliminar_usuario(
         db,

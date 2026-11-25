@@ -386,23 +386,29 @@ BEGIN
     -- =====================================================
 
     INSERT INTO reserva
-    (fecha_hora, estado, id_usuario, id_servicio)
+    (fecha_hora, estado, precio_total, tipo_evento,
+     cantidad_personas, mensaje, id_usuario, id_servicio)
     VALUES
-    ('2026-12-05 14:00:00', 'PENDIENTE',
+    ('2026-10-05 14:00:00', 'ACEPTADA', 250000.00,
+     'Matrimonio', 80, 'Solicito opciones vegetarianas.',
      usr_carlos, serv_buffet)
     RETURNING id_reserva INTO res_carlos;
 
     INSERT INTO reserva
-    (fecha_hora, estado, id_usuario, id_servicio)
+    (fecha_hora, estado, precio_total, tipo_evento,
+     cantidad_personas, mensaje, id_usuario, id_servicio)
     VALUES
-    ('2026-12-15 18:00:00', 'PENDIENTE',
+    ('2026-10-15 18:00:00', 'ACEPTADA', 500000.00,
+     'Evento empresarial', 120, 'Instalacion antes de las 5 p. m.',
      usr_laura, serv_pantallas)
     RETURNING id_reserva INTO res_laura;
 
     INSERT INTO reserva
-    (fecha_hora, estado, id_usuario, id_servicio)
+    (fecha_hora, estado, precio_total, tipo_evento,
+     cantidad_personas, mensaje, id_usuario, id_servicio)
     VALUES
-    ('2026-12-20 16:00:00', 'PENDIENTE',
+    ('2026-12-20 16:00:00', 'PENDIENTE', 350000.00,
+     'Quinceañero', 60, 'Preferimos tonos lavanda y blanco.',
      usr_sofia, serv_decoracion)
     RETURNING id_reserva INTO res_sofia;
 
@@ -425,14 +431,18 @@ BEGIN
     -- 13. RESENAS
     -- =====================================================
 
-    INSERT INTO resena (fecha_resena, descripcion_resena, id_reserva)
+    INSERT INTO resena
+    (fecha_resena, descripcion_resena, calificacion,
+     respuesta_empresa, id_reserva)
     VALUES
-    ('2026-12-06', 'Excelente servicio y atencion.',
+    ('2026-10-06', 'Excelente servicio y atencion.', 5,
+     'Gracias por confiar en nosotros. Nos alegra que hayan disfrutado el servicio.',
      res_carlos);
 
-    INSERT INTO resena (fecha_resena, descripcion_resena, id_reserva)
+    INSERT INTO resena
+    (fecha_resena, descripcion_resena, calificacion, id_reserva)
     VALUES
-    ('2026-12-16', 'Muy buena calidad del montaje.',
+    ('2026-10-16', 'Muy buena calidad del montaje.', 4,
      res_laura);
 
 END $$;

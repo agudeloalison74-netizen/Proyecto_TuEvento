@@ -98,6 +98,9 @@ CREATE TABLE reserva (
     fecha_hora TIMESTAMP NOT NULL,
     estado VARCHAR(30) NOT NULL DEFAULT 'PENDIENTE',
     precio_total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    tipo_evento VARCHAR(100),
+    cantidad_personas INT CHECK (cantidad_personas IS NULL OR cantidad_personas > 0),
+    mensaje TEXT,
     id_usuario INT NOT NULL REFERENCES usuario(id_usuario) ON DELETE RESTRICT ON UPDATE CASCADE,
     id_servicio INT NOT NULL REFERENCES servicio(id_servicio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -107,6 +110,8 @@ CREATE TABLE resena (
     id_resena SERIAL PRIMARY KEY,
     fecha_resena DATE NOT NULL DEFAULT CURRENT_DATE,
     descripcion_resena TEXT,
+    calificacion SMALLINT CHECK (calificacion BETWEEN 1 AND 5),
+    respuesta_empresa TEXT,
     id_reserva INT NOT NULL REFERENCES reserva(id_reserva) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

@@ -1,4 +1,12 @@
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text
+)
 
 from app.config.database import Base
 
@@ -28,6 +36,21 @@ class Reserva(Base):
     fecha_hora = Column(
         DateTime,
         nullable=False
+    )
+
+    tipo_evento = Column(
+        String(100),
+        nullable=True
+    )
+
+    cantidad_personas = Column(
+        Integer,
+        nullable=True
+    )
+
+    mensaje = Column(
+        Text,
+        nullable=True
     )
 
     estado = Column(
