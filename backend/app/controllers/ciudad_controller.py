@@ -45,6 +45,7 @@ def crear_ciudad(
 
     return nueva_ciudad
 
+
 def eliminar_ciudad(
     db: Session,
     id_ciudad: int

@@ -81,6 +81,7 @@ def registrar_muestra(
 
     return nueva_muestra
 
+
 @router.delete(
     "/{id_muestra}",
     status_code=204

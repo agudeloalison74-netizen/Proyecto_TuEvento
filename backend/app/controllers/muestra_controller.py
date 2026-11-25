@@ -34,7 +34,6 @@ def crear_muestra(
 
         return None, "El servicio indicado no existe"
 
-
     nueva_muestra = Muestra(
         descripcion_muestra=muestra.descripcion_muestra,
         url=muestra.url,
@@ -46,6 +45,7 @@ def crear_muestra(
     db.refresh(nueva_muestra)
 
     return nueva_muestra, None
+
 
 def eliminar_muestra(
     db: Session,

@@ -35,10 +35,12 @@ class RecuperarContrasenaRequest(BaseModel):
 
     correo_usuario: EmailStr
 
+
 class RestablecerContrasenaRequest(BaseModel):
     correo_usuario: EmailStr
     codigo: str = Field(pattern=r"^\d{6}$")
     contrasena_nueva: str = Field(min_length=8)
+
 
 class CambioContrasenaRequest(BaseModel):
 

@@ -71,6 +71,7 @@ def registrar_categoria(
 # ELIMINAR CATEGORÍA
 # =========================================================
 
+
 @router.delete(
     "/{id_categoria}",
     status_code=204

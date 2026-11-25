@@ -26,7 +26,6 @@ def crear_servicio_reserva(
 
         return None, "La reserva no existe"
 
-
     evento = db.query(Evento).filter(
         Evento.id_evento == relacion.id_evento
     ).first()
@@ -35,7 +34,6 @@ def crear_servicio_reserva(
 
         return None, "El evento no existe"
 
-
     servicio = db.query(Servicio).filter(
         Servicio.id_servicio == relacion.id_servicio
     ).first()
@@ -43,7 +41,6 @@ def crear_servicio_reserva(
     if not servicio:
 
         return None, "El servicio no existe"
-
 
     existente = db.query(ServicioReserva).filter(
         ServicioReserva.id_reserva == relacion.id_reserva,
@@ -54,7 +51,6 @@ def crear_servicio_reserva(
     if existente:
 
         return None, "La relación ya existe"
-
 
     nueva_relacion = ServicioReserva(
         id_reserva=relacion.id_reserva,
@@ -67,6 +63,7 @@ def crear_servicio_reserva(
     db.refresh(nueva_relacion)
 
     return nueva_relacion, None
+
 
 def eliminar_servicio_reserva(
     db: Session,

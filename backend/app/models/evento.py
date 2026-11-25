@@ -24,11 +24,11 @@ class Evento(Base):
     )
 
     id_empresa = Column(
-      String,
-      ForeignKey("empresa.id_empresa"),
-      nullable=False
+        String,
+        ForeignKey("empresa.id_empresa"),
+        nullable=False
     )
- 
+
     id_categoria = Column(
         Integer,
         ForeignKey("categoria.id_categoria"),

@@ -29,7 +29,7 @@ class Servicio(Base):
     )
 
     id_empresa = Column(
-      String,
-      ForeignKey("empresa.id_empresa"),
-      nullable=False
+        String,
+        ForeignKey("empresa.id_empresa"),
+        nullable=False
     )

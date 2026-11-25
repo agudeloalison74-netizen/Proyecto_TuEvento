@@ -30,13 +30,11 @@ def get_current_user(
 
     token = credentials.credentials
 
-
     # -----------------------------------------------------
     # DECODIFICAR TOKEN
     # -----------------------------------------------------
 
     payload = decode_access_token(token)
-
 
     if not payload:
 
@@ -45,13 +43,11 @@ def get_current_user(
             detail="Token inválido o expirado"
         )
 
-
     # -----------------------------------------------------
     # OBTENER ID DEL USUARIO
     # -----------------------------------------------------
 
     user_id = payload.get("sub")
-
 
     if not user_id:
 
@@ -59,7 +55,6 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido"
         )
-
 
     # -----------------------------------------------------
     # BUSCAR USUARIO
@@ -73,13 +68,11 @@ def get_current_user(
         .first()
     )
 
-
     if not usuario:
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario no encontrado"
         )
-
 
     return usuario

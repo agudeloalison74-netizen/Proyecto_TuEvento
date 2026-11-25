@@ -34,6 +34,7 @@ def crear_departamento(
 
     return nuevo_departamento
 
+
 def eliminar_departamento(
     db: Session,
     id_departamento: int

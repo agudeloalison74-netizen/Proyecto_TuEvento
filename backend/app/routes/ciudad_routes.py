@@ -7,7 +7,7 @@ from app.controllers.ciudad_controller import (
     obtener_ciudades,
     obtener_ciudad,
     crear_ciudad,
-    eliminar_ciudad 
+    eliminar_ciudad
 )
 
 from app.schemas.ciudad_schema import (
@@ -80,6 +80,7 @@ def registrar_ciudad(
         )
 
     return nueva_ciudad
+
 
 @router.delete(
     "/{id_ciudad}",

@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 
+from pydantic import BaseModel, EmailStr
+
 from app.controllers.usuario_controller import (
     obtener_usuarios,
     obtener_usuario,
@@ -11,6 +13,7 @@ from app.controllers.usuario_controller import (
     autenticar_usuario,
     eliminar_usuario,
     solicitar_recuperacion_contrasena,
+    verificar_codigo_recuperacion,
     cambiar_contrasena,
     actualizar_perfil_usuario,
     restablecer_contrasena
@@ -43,6 +46,17 @@ router = APIRouter(
     tags=["Usuarios"]
 )
 
+class VerificarCodigoRequest(BaseModel):
+    correo_usuario: EmailStr
+    codigo: str
+
+
+@router.post("/auth/verificar-codigo")
+def verificar_codigo_route(
+    datos: VerificarCodigoRequest,
+    db: Session = Depends(get_db)
+):
+    return verificar_codigo_recuperacion(db, str(datos.correo_usuario), datos.codigo)
 
 # =========================================================
 # LISTAR USUARIOS
@@ -228,12 +242,14 @@ def recuperar_contrasena(
 ):
     return solicitar_recuperacion_contrasena(db, datos)
 
+
 @router.post("/auth/restablecer-contrasena")
 def restablecer_contrasena_route(
     datos: RestablecerContrasenaRequest,
     db: Session = Depends(get_db)
 ):
     return restablecer_contrasena(db, datos)
+
 
 @router.put("/me/contrasena")
 def actualizar_contrasena(

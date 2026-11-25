@@ -117,6 +117,7 @@ def registrar_empresa(
 
     return nueva_empresa
 
+
 @router.delete(
     "/{id_empresa}",
     status_code=204

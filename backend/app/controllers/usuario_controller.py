@@ -221,6 +221,72 @@ def restablecer_contrasena(
         "mensaje": "La contraseña se cambió correctamente."
     }
 
+def verificar_codigo_recuperacion(
+    db: Session,
+    correo_usuario: str,
+    codigo: str
+):
+    correo = str(correo_usuario)
+    recuperacion = (
+        db.query(RecuperacionContrasena)
+        .filter(RecuperacionContrasena.correo_usuario == correo)
+        .first()
+    )
+
+    if not recuperacion:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    if recuperacion.expira_en <= time.time():
+        db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    codigo_correcto = hmac.compare_digest(
+        recuperacion.codigo_hash,
+        _hash_codigo(correo, codigo)
+    )
+
+    if not codigo_correcto:
+        recuperacion.intentos += 1
+        if recuperacion.intentos >= MAX_INTENTOS_CODIGO:
+            db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    usuario = (
+        db.query(Usuario)
+        .filter(Usuario.correo_usuario == correo)
+        .first()
+    )
+    if not usuario:
+        db.delete(recuperacion)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El código no es válido o ya venció."
+        )
+
+    contrasena_temporal = secrets.token_urlsafe(10)
+    usuario.contrasena_usuario = hash_password(contrasena_temporal)
+    db.delete(recuperacion)
+    db.commit()
+
+    enviar_correo(
+        correo,
+        "Nueva contraseña temporal - TuEvento",
+        f"Tu nueva contraseña temporal es: {contrasena_temporal}"
+    )
+
+    return {"mensaje": "Código verificado y contraseña temporal enviada."}
 
 def cambiar_contrasena(
     db: Session,
@@ -340,7 +406,6 @@ def crear_usuario(
 
         return None
 
-
     # -----------------------------------------------------
     # CREAR USUARIO
     # -----------------------------------------------------
@@ -362,7 +427,6 @@ def crear_usuario(
         rol=usuario.rol
     )
 
-
     # -----------------------------------------------------
     # GUARDAR
     # -----------------------------------------------------
@@ -372,7 +436,6 @@ def crear_usuario(
     db.commit()
 
     db.refresh(nuevo_usuario)
-
 
     return nuevo_usuario
 
@@ -406,7 +469,6 @@ def registrar_usuario(
             detail="El correo electrónico ya está registrado"
         )
 
-
     # -----------------------------------------------------
     # CREAR USUARIO
     # -----------------------------------------------------
@@ -428,7 +490,6 @@ def registrar_usuario(
         rol=datos.rol
     )
 
-
     # -----------------------------------------------------
     # GUARDAR EN BASE DE DATOS
     # -----------------------------------------------------
@@ -438,7 +499,6 @@ def registrar_usuario(
     db.commit()
 
     db.refresh(nuevo_usuario)
-
 
     return nuevo_usuario
 
@@ -465,7 +525,6 @@ def autenticar_usuario(
         .first()
     )
 
-
     # -----------------------------------------------------
     # VALIDAR USUARIO
     # -----------------------------------------------------
@@ -476,7 +535,6 @@ def autenticar_usuario(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos"
         )
-
 
     # -----------------------------------------------------
     # VALIDAR CONTRASEÑA
@@ -489,7 +547,6 @@ def autenticar_usuario(
             detail="El usuario no tiene una contraseña configurada"
         )
 
-
     if not verify_password(
         datos.contrasena_usuario,
         usuario.contrasena_usuario
@@ -499,7 +556,6 @@ def autenticar_usuario(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos"
         )
-
 
     # -----------------------------------------------------
     # CREAR TOKEN JWT
@@ -516,11 +572,11 @@ def autenticar_usuario(
         }
     )
 
-
     return {
         "access_token": access_token,
         "token_type": "bearer"
     }
+
 
 def eliminar_usuario(
     db: Session,

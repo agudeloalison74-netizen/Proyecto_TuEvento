@@ -72,6 +72,7 @@ def registrar_departamento(
         departamento
     )
 
+
 @router.delete(
     "/{id_departamento}",
     status_code=204

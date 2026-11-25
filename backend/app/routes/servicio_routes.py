@@ -81,6 +81,7 @@ def registrar_servicio(
 
     return nuevo_servicio
 
+
 @router.delete(
     "/{id_servicio}",
     status_code=204

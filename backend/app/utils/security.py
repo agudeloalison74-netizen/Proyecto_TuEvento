@@ -1,3 +1,6 @@
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException, status
+
 from datetime import datetime, timedelta, timezone
 
 from jose import jwt
@@ -90,9 +93,6 @@ def decode_access_token(
         SECRET_KEY,
         algorithms=[ALGORITHM]
     )
-
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi import Depends, HTTPException, status
 
 
 security = HTTPBearer()

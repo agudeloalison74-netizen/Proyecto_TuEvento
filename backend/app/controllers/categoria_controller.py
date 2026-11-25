@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status  # noqa: F401
 from sqlalchemy.orm import Session
 
 from app.models.categoria import Categoria

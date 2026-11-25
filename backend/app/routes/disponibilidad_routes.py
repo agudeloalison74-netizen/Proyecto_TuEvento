@@ -81,6 +81,7 @@ def registrar_disponibilidad(
 
     return nueva_disponibilidad
 
+
 @router.delete(
     "/{id_disponibilidad}",
     status_code=204

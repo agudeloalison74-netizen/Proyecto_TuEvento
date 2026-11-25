@@ -56,6 +56,7 @@ def registrar_servicio_evento(
 
     return nueva_relacion
 
+
 @router.delete(
     "/{id_servicio}/{id_evento}",
     status_code=204

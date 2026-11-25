@@ -34,14 +34,12 @@ def crear_evento(
     if not empresa:
         return None, "La empresa indicada no existe"
 
-
     categoria = db.query(Categoria).filter(
         Categoria.id_categoria == evento.id_categoria
     ).first()
 
     if not categoria:
         return None, "La categoría indicada no existe"
-
 
     nuevo_evento = Evento(
         nombre_evento=evento.nombre_evento,
@@ -55,6 +53,7 @@ def crear_evento(
     db.refresh(nuevo_evento)
 
     return nuevo_evento, None
+
 
 def eliminar_evento(
     db: Session,

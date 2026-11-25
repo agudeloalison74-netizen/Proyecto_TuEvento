@@ -36,7 +36,6 @@ def crear_disponibilidad(
 
             return None, "El servicio indicado no existe"
 
-
     nueva_disponibilidad = Disponibilidad(
         fecha_hora=disponibilidad.fecha_hora,
         estado=disponibilidad.estado,
@@ -48,6 +47,7 @@ def crear_disponibilidad(
     db.refresh(nueva_disponibilidad)
 
     return nueva_disponibilidad, None
+
 
 def eliminar_disponibilidad(
     db: Session,

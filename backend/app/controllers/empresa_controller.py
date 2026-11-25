@@ -61,7 +61,6 @@ def crear_empresa(
 
         return None, "La ciudad indicada no existe"
 
-
     usuario = db.query(Usuario).filter(
         Usuario.id_usuario == empresa.id_usuario
     ).first()
@@ -70,7 +69,6 @@ def crear_empresa(
 
         return None, "El usuario indicado no existe"
 
-
     empresa_existente = db.query(Empresa).filter(
         Empresa.id_empresa == empresa.id_empresa
     ).first()
@@ -78,7 +76,6 @@ def crear_empresa(
     if empresa_existente:
 
         return None, "El NIT de la empresa ya está registrado"
-
 
     nueva_empresa = Empresa(
 
@@ -104,6 +101,7 @@ def crear_empresa(
     db.refresh(nueva_empresa)
 
     return nueva_empresa, None
+
 
 def eliminar_empresa(
     db: Session,

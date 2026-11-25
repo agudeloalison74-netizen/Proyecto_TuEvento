@@ -81,6 +81,7 @@ def registrar_evento(
 
     return nuevo_evento
 
+
 @router.delete(
     "/{id_evento}",
     status_code=204
