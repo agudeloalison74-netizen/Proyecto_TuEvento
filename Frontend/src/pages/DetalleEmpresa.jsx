@@ -1,21 +1,18 @@
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "../styles/empresas.css";
-
 
 function DetalleEmpresa() {
 
     const location = useLocation();
     const navigate = useNavigate();
 
-
     const empresa = location.state?.empresa;
-
 
     if (!empresa) {
 
         return (
-
             <div className="container py-5">
 
                 <h2>
@@ -30,39 +27,31 @@ function DetalleEmpresa() {
                 </Link>
 
             </div>
-
         );
 
     }
-
 
     const handleReservar = () => {
 
         const autenticado =
             localStorage.getItem("usuarioAutenticado") === "true";
 
-
         if (!autenticado) {
 
             navigate("/login");
-
             return;
 
         }
-
 
         navigate("/reserva");
 
     };
 
-
     return (
 
         <div className="empresa-detail-page">
 
-
             <div className="container py-5">
-
 
                 <Link
                     to="/"
@@ -71,13 +60,9 @@ function DetalleEmpresa() {
                     ← Volver a empresas
                 </Link>
 
-
-
                 <div className="empresa-detail-card mt-4">
 
-
                     <div className="row g-0">
-
 
                         <div className="col-lg-5">
 
@@ -89,64 +74,71 @@ function DetalleEmpresa() {
 
                         </div>
 
-
-
                         <div className="col-lg-7">
 
                             <div className="empresa-detail-content">
-
 
                                 <span className="company-category">
                                     {empresa.categoria}
                                 </span>
 
-
                                 <h1>
                                     {empresa.nombre}
                                 </h1>
-
 
                                 <p className="company-city">
                                     📍 {empresa.ciudad}
                                 </p>
 
-
                                 <p className="empresa-detail-description">
                                     {empresa.descripcion}
                                 </p>
 
-
                                 <hr />
-
 
                                 <h3>
                                     Servicios disponibles
                                 </h3>
 
-
                                 <div className="services-list">
 
-                                    {empresa.servicios.map(
-                                        (servicio, index) => (
+                                    {empresa.servicios &&
+                                    empresa.servicios.length > 0 ? (
+
+                                        empresa.servicios.map((servicio) => (
 
                                             <div
                                                 className="service-item"
-                                                key={index}
+                                                key={servicio.id_servicio}
                                             >
 
-                                                <span>
-                                                    ✓
-                                                </span>
+                                                <strong>
+                                                    {servicio.nombre_servicio}
+                                                </strong>
 
-                                                {servicio}
+                                                <p>
+                                                    {servicio.descripcion_servicio}
+                                                </p>
+
+                                                <strong>
+                                                    ${Number(
+                                                        servicio.precio_referencia || 0
+                                                    ).toLocaleString("es-CO")}
+                                                </strong>
 
                                             </div>
 
-                                        )
+                                        ))
+
+                                    ) : (
+
+                                        <p>
+                                            Esta empresa todavía no tiene servicios registrados.
+                                        </p>
+
                                     )}
 
                                 </div>
-
 
                                 <button
                                     className="btn btn-primary btn-lg mt-4"
@@ -154,7 +146,6 @@ function DetalleEmpresa() {
                                 >
                                     Reservar servicio
                                 </button>
-
 
                             </div>
 
@@ -169,7 +160,7 @@ function DetalleEmpresa() {
         </div>
 
     );
-}
 
+}
 
 export default DetalleEmpresa;
